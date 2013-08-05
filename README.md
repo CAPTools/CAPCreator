@@ -11,8 +11,8 @@ alerting requirements);
 circles); and,
   <li>All alerts are assumed to be effective immediately; the "effective" and "onset" elements are not supported.
 </ul>
-<p><b>CAPCreator</b> is part of the <b>CAPSuite&trade;</b> collection and is designed to integrate with the 
+<p><b>CAPCreator</b> is part of the <b>CAPTools&trade;</b> collection and is designed to integrate with the 
 <b>CAPCollector&trade;</b> server for XML serialization, sender authentication, digital signature, alert forwarding 
 and local alert aggregation, and with the <b>CAPConsumer&trade;</b> framework for CAP message injestion and display.</p>
- <b>CAPSuite</b>, <b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are trademarks of Carnegie Mellon 
+ <b>CAPTools</b>, <b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are trademarks of Carnegie Mellon 
  University.
