@@ -1,7 +1,6 @@
 CAPCreator&trade;
 ==========
 
-A web client for simple CAP 1.2 authoring<br>
 <b>CAPCreator&trade;</b> is a simple tool for authoring alerts and other messages using the 
 <a href="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html" target="_blank">Common Alerting Protocol (v1.2)</a>. 
 A few notable limits on the current version:
