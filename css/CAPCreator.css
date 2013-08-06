@@ -1,0 +1,168 @@
+/*
+	CAPCreator.css -- styles for CAPCreator
+	version 0.9 - 4 August 2013
+	
+	Copyright (c) 2013, Carnegie Mellon University
+	All rights reserved.
+
+	Redistribution and use in source and binary forms, with or without modification, are permitted 
+	provided that the following conditions are met:
+	
+	* Redistributions of source code must retain the above copyright notice, this list of conditions
+	and the following disclaimer.
+	
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
+	and the following disclaimer in the documentation and/or other materials provided with the distribution.
+	
+	* Neither the name of Carnegie Mellon University nor the names of its contributors may be used to endorse or 
+	promote products derived from this software without specific prior written permission.
+	
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+	IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 
+	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+	BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
+	BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+	Contributors:  Art Botterell <art.botterell@sv.cmu.edu>, <acb@incident.com>, <art@raydant.com>
+	
+*/
+
+.jqm-header {
+	padding: 8px;
+}
+
+.page_label {
+	font-size: 16px;
+}
+
+.tm {
+	font-size: 12px;
+	font-weight: normal;
+	color: gray;
+}
+
+.jqm-content {
+	margin: 2px 10px 5px 0px;
+}
+
+.jqm-footer {
+	padding: 3px;
+	margin: 0px;
+}
+
+/* avoid pink tiles in maps */
+.olImageLoadError {
+	background-color: transparent !important;
+}
+
+#coords {
+	margin-left: 5px;
+	font-size: 0.8em;
+	float: left;
+	color: White;
+}
+
+#radius {
+	width: 180px;
+	height: 20px;
+	float:right;
+	font-size: 0.8em;
+	text-align: right;
+	margin-right: 5px;
+	color: White;
+}
+
+#display_div {
+	width: 95%;
+}
+
+#map_panel {
+	width: 100%;
+	height: 400px;
+	background-color: SteelBlue;
+}
+
+.largemap {
+	width: 100%;
+	height: 380px;
+}
+
+#map {
+	cursor: crosshair;
+}
+
+#mode_panel {
+	width: 100%;
+	border: 1px;
+}
+
+input[type=radio] {
+	cursor: pointer;
+}
+
+input[type=button] {
+	cursor: pointer;
+}
+
+.tuple_text_input {
+	width:40%;
+	margin:2px;
+}
+
+.ui-mini .ui-btn-inner .ui-btn-text {
+    font-size: 12px;
+    padding: 2px;
+    margin: 2px;
+}
+
+.info_block {
+	font-size: 10pt;
+	
+}
+
+.field_label {
+	font-size: 0.7em;
+	font-weight:bold;
+	margin-top: 10px;
+}
+
+#headline_length {
+	font-style: italic;
+}
+
+#review_div {
+	font-size: 0.8em;
+	height: 300px;
+	background-color: White;
+	overflow: auto;
+}
+
+#about_div {
+	margin:5px 0px 10px 5px;
+	font-size: 0.8em;
+	height: 40px;
+	background-color: White;
+	overflow: auto;
+}
+
+#current_alerts_div {
+	margin:0px;
+	font-size: 0.6em;
+	height: 400px;
+	background-color: White;
+	overflow: auto;
+}
+
+#response_span {
+	font-size: 0.7em;
+	background-color: White;
+}
+
+.subhead {
+	margin: 0px 0px 6px 0px;
+	font-size: 0.9em;
+	font-weight: bold;	
+}
