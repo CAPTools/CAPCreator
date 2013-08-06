@@ -4,40 +4,18 @@
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification, are permitted 
-	provided that the following conditions are met:
 	
-	* Redistributions of source code must retain the above copyright notice, this list of conditions
-	and the following disclaimer.
-	
-	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
-	and the following disclaimer in the documentation and/or other materials provided with the distribution.
-	
-	* Neither the name of Carnegie Mellon University nor the names of its contributors may be used to endorse or 
-	promote products derived from this software without specific prior written permission.
-	
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
-	IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 
-	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
-	BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
-	BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
-	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-	Contributors:  Art Botterell <art.botterell@sv.cmu.edu>, <acb@incident.com>, <art@raydant.com>
+	See LICENSE.txt for license terms (Modified BSD) 
 	
 	DEPENDENCIES AND REQUIREMENTS:
 		OpenLayers, jQuery, jQuery Mobile and Moment.js, as well as local libraries
-			caplib.js, widgets.js must be loaded in the HTML
+		config.js, caplib.js cap_map.js and widgets.js must be loaded in the HTML first
 		 
 */
 
-
 var versionID = "0.9"
-var submitUrl = "https://www.incident.com/cgi-bin/post_cap";
-var atomUrl = "https://www.incident.com/map/data/index.atom";
+var submitUrl = config.CAPCollectorSubmitURL;
+var atomUrl = config.CAPCollectorBaseURL + "/index.atom";
 var max_headline_length = 140;
 
 var alert = new Alert();
@@ -139,11 +117,13 @@ function viewAlert( link ) {
 			$span.append("<pre>" + jqXHR.responseText + "</pre>");
 			$("#cancel_button").click( function(e) { console.log("cancel clicked"); } );
 			$("#update_button").click( function(e) { console.log("update clicked"); } );
+			
 			// DISABLE FOR NOW, PENDING COMPLETION OF THE ABOVE FUNCTIONS
 			$("#update_button").button('disable');
 			$("#update_button").button('refresh');
 			$("#cancel_button").button('disable');
 			$("#cancel_button").button('refresh');
+			
 		},	
 	} );
 }
@@ -250,23 +230,4 @@ function model2screen() {}
 	
 // load JSON into the model
 function load_template() {}
-
-
-
-
-
-//  COMPLIANCE CHECKS
-
-//  IMPLEMENT I18N
-
-/*  SERVER FUNCTIONS
- * 
- *  Accept Alerts (w. authentication), convert to XML, sign and forward
- *  Provide Alert Templates (and list thereof)
- *  Provide Area Templates (and list thereof)
- *  Provide list of active messages and return cancel/update templates
- *  Display Alerts and XML on Web
- * 
- */
-
 
