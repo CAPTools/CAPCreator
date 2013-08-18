@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9 - 4 August 2013
+	version 0.9 - 18 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -47,6 +47,7 @@ $(document).on('pageshow', "#current", function() {
 	$.ajax( { 
 		url: atomUrl,
 		dataType: "xml",
+		cache: false,
 		success: function(data, status, jqXHR) {
 			var $span = $("#current_alerts_span");
 			$span.html('');
