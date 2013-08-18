@@ -1,6 +1,6 @@
 /*
 	caplib.js -- Common Alerting Protocol 1.2 helper library
-	version 1.1.1 - 6 August 2013
+	version 1.1.1 - 18 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -9,6 +9,7 @@
 	
 	API (see trivial usage example at end of file):
 		new Alert() - returns an uninitialized Alert object
+		parseCAP2Alert() - turn a CAP XML string into an Alert object
 		Alert.getJSON() - returns the Alert (including included Infos, Resources and Elements) as a JSON string
 		Alert.getCAP() - returns the Alert at CAP 1.2 XML
 		Alert.addInfo() - adds an Info object to the Alert.infos array and returns the new Info object
@@ -17,11 +18,10 @@
 		Info.addEventCode( string, string ) - adds an eventCode valueName/value pair to the Info.eventCodes array (values may be constrained in 'valueName' namespace)
 		Info.addParameter( string, string ) - adds a parameter valueName/value pair to the Info.parameters array (values may be constrained in 'valueName' namespace)
 		Alert.addArea( string ) - adds an Area object to the Info.areas array, initializes the areaDesc field from argument and returns the new Area object
-		Alert.addResoruce( string ) - adds a Resource object to the Info.resources array, initializes the resourceDesk field from argument and returns the new Resource object
+		Alert.addResource( string ) - adds a Resource object to the Info.resources array, initializes the resourceDesk field from argument and returns the new Resource object
 		All other properties are populated by direct assignment.  All reads are performed by direct reference.
 
 */
-
 //////////////////////////////////////////////////
 // ALERT Object
 var Alert = function() {
@@ -260,6 +260,85 @@ Area.prototype.addGeocode = function(valueName, value) {
 	var geocode = new Geocode(valueName,value);
 	this.geocodes.push( geocode );
 }
+
+
+//parse XML string into an Alert object
+function parseCAP2Alert( cap_xml ) {
+	var xml = $.parseXML( cap_xml );
+	
+	// populate new alert with values from XML
+	var alert = new Alert();
+	alert.identifier = $(xml).find("identifier").text();	
+	alert.sender = $(xml).find("sender").text();
+	alert.sent = $(xml).find("sent").text();
+	alert.status = $(xml).find("status").text();
+	alert.msgType = $(xml).find("msgType").text();
+	alert.source = $(xml).find("source").text();
+	alert.scope = $(xml).find("scope").text();
+	alert.restriction = $(xml).find("restriction").text();
+	alert.addresses = $(xml).find("addresses").text();
+	alert.code = $(xml).find("code").text();
+	alert.note = $(xml).find("note").text();
+	alert.references = $(xml).find("references").text();
+	alert.incidents = $(xml).find("incidents").text();
+	
+	var info = alert.addInfo();  // only one Info is supported in current version!
+	info.lang = $(xml).find("lang").text();
+	$(xml).find("category").each( function() {
+		info.addCategory( $(this).text() );
+	}
+	info.event = $(xml).find("event").text();
+	$(xml).find("responseType").each( function() {
+		info.addResponseType( $(this).text() );
+	}
+	info.urgency = $(xml).find("urgency").text();
+	info.severity = $(xml).find("severity").text();
+	info.certainty = $(xml).find("certainty").text();
+	info.audience = $(xml).find("audience").text();
+	$(xml).find("eventCode").each( function() {
+		info.addEventCode( $(this).text() );
+	}
+	info.effective = $(xml).find("effective").text();
+	info.onset = $(xml).find("onset").text();
+	info.expires = $(xml).find("expires").text();
+	info.senderName = $(xml).find("senderName").text();
+	info.headline = $(xml).find("headline").text();
+	info.description = $(xml).find("description").text();
+	info.instruction = $(xml).find("instruction").text();
+	info.web = $(xml).find("web").text();
+	info.contact = $(xml).find("contact").text();
+	$(xml).find("resource").each( function() {
+		var resource = info.addResource();
+		resource.resourceDesc = $(this).find("areaDesc").text();
+		resource.mimeType = $(this).find("mimeType").text();
+		resource.uri = $(this).find("uri").text();
+		resource.digest = $(this).find("digest").text();
+	}	
+	$(xml).find("parameter").each( function() {
+		var parameter = info.addParameter();
+		parameter.valueName = $(this).find("valueName").text();
+		parameter.value = $(this).find("value").text();
+	}
+	var area = info.addArea();  // Only one Area is supported in current version!
+	area.areaDesc = $(xml).find("areaDesc").text();
+	$(xml).find("polygon").each( function() {
+		$this = $(this);
+		area.addPolygon( $(this).text() );
+	}
+	$(xml).find("eventCode").each( function() {
+		info.addEventCode( $(this).text() );
+	}
+	$(xml).find("geocode").each( function() {
+		var geocode = info.addGeocode();
+		geocode.valueName = $(this).find("valueName").text();
+		geocode.value = $(this).find("value").text();
+	}	
+	area.altitude = $(xml).find("altitude").text();
+	area.ceiling = $(xml).find("ceiling").text();
+		
+	return alert;
+}
+
 
 
 ///////////////////////////////////////////////////////
