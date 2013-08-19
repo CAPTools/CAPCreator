@@ -291,18 +291,18 @@ function parseCAP2Alert( cap_xml ) {
 	info.lang = $(xml).find("lang").text();
 	$(xml).find("category").each( function() {
 		info.addCategory( $(this).text() );
-	}
+	}  );
 	info.event = $(xml).find("event").text();
 	$(xml).find("responseType").each( function() {
 		info.addResponseType( $(this).text() );
-	}
+	}  );
 	info.urgency = $(xml).find("urgency").text();
 	info.severity = $(xml).find("severity").text();
 	info.certainty = $(xml).find("certainty").text();
 	info.audience = $(xml).find("audience").text();
 	$(xml).find("eventCode").each( function() {
 		info.addEventCode( $(this).text() );
-	}
+	}  );
 	info.effective = $(xml).find("effective").text();
 	info.onset = $(xml).find("onset").text();
 	info.expires = $(xml).find("expires").text();
@@ -318,26 +318,26 @@ function parseCAP2Alert( cap_xml ) {
 		resource.mimeType = $(this).find("mimeType").text();
 		resource.uri = $(this).find("uri").text();
 		resource.digest = $(this).find("digest").text();
-	}	
+	} );
 	$(xml).find("parameter").each( function() {
 		var parameter = info.addParameter();
 		parameter.valueName = $(this).find("valueName").text();
 		parameter.value = $(this).find("value").text();
-	}
+	}  );
 	var area = info.addArea();  // Only one Area is supported in current version!
 	area.areaDesc = $(xml).find("areaDesc").text();
 	$(xml).find("polygon").each( function() {
 		$this = $(this);
 		area.addPolygon( $(this).text() );
-	}
+	}  );
 	$(xml).find("eventCode").each( function() {
 		info.addEventCode( $(this).text() );
-	}
+	}  );
 	$(xml).find("geocode").each( function() {
 		var geocode = info.addGeocode();
 		geocode.valueName = $(this).find("valueName").text();
 		geocode.value = $(this).find("value").text();
-	}	
+	}  );
 	area.altitude = $(xml).find("altitude").text();
 	area.ceiling = $(xml).find("ceiling").text();
 	return alert;
