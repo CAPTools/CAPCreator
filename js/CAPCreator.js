@@ -242,14 +242,33 @@ function alert2screen( alert ) {
 	$("#text-contact").text( info.contact );
 	$("#text-source").text( info.source );
 	$("#textarea-note").text( info.note );
-	// NEED TO DO PARAMETERS (AND GEOCODES)
-	
-	// NEED TO DO GEOMETRIES INTO MAPS
-	
-	// NEED TO GET INCOMING identifier INTO CURRENT MODEL'S references (AND MAKE SURE IT GETS INTO XML)
-	
-	// NEED TO SET msgType PER THE BUTTON PUSHED
-	
+	// clear and reload parameter set in widget
+	parameter_set.removeAll();
+	var params = $(xml).find("parameter").each( function() {
+		var valueName = $(this).find("valueName").text();
+		var value = $(this).find("value").text();
+		parameter_set.addAndPopulate(valueName, value);
+	} );
+	$("#text-areaDesc").text( area.areaDesc );
+	// clear and reload geocode set in widget
+	geocode_set.removeAll();
+	$(xml).find("geocode").each( function() {
+		var valueName = $(this).find("valueName").text();
+		var value = $(this).find("value").text();
+		geocode_set.addAndPopulate(valueName, value);
+
+	} );
+	// clear and reload polygons in map
+	map.clearAll();
+	$(xml).find("polygon").each( function() {
+		map.addCapPolygonToMap( $(this).text() );
+	} );
+	// clear and reload polygons in map
+	$(xml).find("circle").each( function() {
+		map.addCapCircleToMap( $(this).text() );
+	} );
+	// altitude is not imported
+	// ceiling is not imported	
 }
 
 
