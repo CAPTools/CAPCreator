@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9 - 18 August 2013
+	version 0.9 - 19 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -30,6 +30,7 @@ var geocode_set;
 $(document).on('pageinit', "#alert", function() { 
 	info.lang = $("#select-language").val();	
 } );
+
 
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', "#info", function() { 
@@ -76,7 +77,7 @@ $(document).on('pageshow', "#current", function() {
 
 // Any time we go to the Review page, show the CAP XML
 $(document).on('pageshow', "#release", function() { 
-	showResult("");  // clear the response message
+	$("#response_span").html("");  // clear the response message
 	view2model();  // force an update from screens  
 	$("#review_span").text( alert.getCAP() );
 	// test against rules
