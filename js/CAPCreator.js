@@ -114,12 +114,11 @@ function viewAlert( link ) {
 			var $span = $("#alert_view_span");
 			$span.html("");
 			$div.popup("open");
-			$span.append("[This needs XSL transform]\n");
-			$span.append("<pre>" + jqXHR.responseText + "</pre>");
+			$span.append( styleAlert(jqXHR.responseText) ); // THIS NEED TO BE FLESHED OUT, BELOW
 			$("#cancel_button").click( function(e) { console.log("cancel clicked"); } );
 			$("#update_button").click( function(e) { console.log("update clicked"); } );
 			
-			// DISABLE FOR NOW, PENDING COMPLETION OF THE ABOVE FUNCTIONS
+			// DISABLE BUTTONS FOR NOW, PENDING COMPLETION OF THE ABOVE FUNCTIONS
 			$("#update_button").button('disable');
 			$("#update_button").button('refresh');
 			$("#cancel_button").button('disable');
@@ -207,28 +206,59 @@ function submitAlert() {
 	        	result_message = result_message + "SERVER MESSAGE: " + response_json.error + "\n";
 	        }
         	result_message = result_message + "UUID: " + response_json.uuid + "<br>\n";
-        	showResult( result_message );
+        	// display the result
+        	$("#response_span").html( result_message );
+        	// and after delay, loop back to the Current Alerts screen
         	setTimeout( function() { $.mobile.navigate("#current"); }, 3000 );
         },
         error: function (data, textStatus, errorThrown) {
         	result_message = result_message + "POSSIBLE ERROR IN TRANSMISSION<br>\n";
         	result_message = result_message + "Check active alerts before resending.<br>\n";
         	console.log( "Error: " + data.status + " " + data.responseText );
+        	// display the results
+        	$("#response_span").html( result_message );
+        	// and after delay, loop back to the Current Alerts screen
         	setTimeout( function() { $.mobile.navigate("#current"); }, 3000 );
           },
-    });
-	
-}
-
-function showResult(message) {
-	$("#response_span").html(message);
+    });	
 }
 
 
-// update screen with values from model
-function model2screen() {}
+// update the screens with values from an Alert object
+function alert2screen( alert ) {
+	$("#select-status").val( alert.status ).selectmenu('refresh');
+	$("#select-msgType").val( alert.msgType ).selectmenu('refresh');
+	$("#select-scope").val( alert.scope ).selectmenu('refresh');
+	$("#select-categories").val( info.categories[0] ).selectmenu('refresh');  // only the first value is imported
+	$("#select-responseTypes").val( info.responseTypes[0] ).selectmenu('refresh'); // only the first value is imported
+	$("#select-urgency").val( info.urgency ).selectmenu('refresh');
+	$("#select-severity").val( info.severity ).selectmenu('refresh');
+	$("#select-certainty").val( info.certainty ).selectmenu('refresh');
+	// expiration is not imported
+	$("#text-senderName").text( info.senderName );
+	$("#text-headline").text( info.headline );
+	$("#textarea-description").text( info.description );
+	$("#textarea-instruction").text( info.instruction );
+	$("#text-contact").text( info.contact );
+	$("#text-source").text( info.source );
+	$("#textarea-note").text( info.note );
+	// NEED TO DO PARAMETERS (AND GEOCODES)
 	
+	// NEED TO DO GEOMETRIES INTO MAPS
 	
-// load JSON into the model
-function load_template() {}
+	// NEED TO GET INCOMING identifier INTO CURRENT MODEL'S references (AND MAKE SURE IT GETS INTO XML)
+	
+	// NEED TO SET msgType PER THE BUTTON PUSHED
+	
+}
+
+
+// style CAP XML string as HTML
+function styleAlert(cap_xml) {
+	var xml = $.parseXML( cap_xml );
+	var styled = "<pre>" + cap_xml + "</pre>";   // FOR NOW
+	return styled;
+}
+
+
 
