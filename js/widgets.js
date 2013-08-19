@@ -1,6 +1,6 @@
 /*
 	widgets.js -- various for CAPComposer
-	version 1.0 - 25 July 2013
+	version 1.0 - 19 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -11,7 +11,6 @@
 		OpenLayers, jQuery, jQuery Mobile and caplib.js must already be loaded into the document.
 		 
 */
-
 
 // Widget for a CAP tuple set element (set of valueName/value pairs, e.g., parameter, geocode)
 var CapTupleSetWidget = function( label, area, div ) {	
@@ -33,11 +32,19 @@ CapTupleSetWidget.prototype = {
 		new_tuple.valueName.focus();  // and put focus on valueName field
 	},
 	
+	addAndPopulate : function( valueName, value ) {
+		var new_tuple = new CapTupleWidget( tupleSet, $(tupleSet.div).width() );
+		$(new_tuple.valueName).val( valueName );
+		$(new_tuple.value).val( value );
+		this.tuples.push( new_tuple );  // add to array
+		$(this.div).append( $(new_tuple.div) );  // add to screen
+	},
+	
 	deleteItem : function(event) {
-		var tuple = event.data;  // ref to tuple
+		var tuple = event.data;  // ref to tuple to be removed
 		var tupleSet = tuple.tupleSet;  // ref to tupleSet
-		tupleSet.tuples.splice( $.inArray(tuple, tupleSet.tuples),1); //remove from array
-		$(tuple.div).remove(); // remove from screen
+		tupleSet.tuples.splice( $.inArray(tuple, tupleSet.tuples),1); // remove from array
+		$(tuple.div).remove(); // and also remove from screen
 	},
 	
 	getAll : function() {  // return widget contents as an array of arrays
@@ -52,6 +59,14 @@ CapTupleSetWidget.prototype = {
 		return items;
 	},
 	
+	removeAll : function() {  // remove all tuples from the set
+		for (var i=0; i < this.tuples.length; i++ ) {
+			var tuple = this.tuples[i];
+			this.tuples.splice( $.inArray(tuple, this.tuples), 1); // remove from array
+			$(tuple.div).remove(); // and also remove from screen
+		}
+	},
+	
 }  // end CapTupleSetWidget definition
 
 	
@@ -64,7 +79,6 @@ var CapTupleWidget = function( tupleSet, widget_width ) {
 	this.valueName.change(tupleSet.changed);
 	this.value = $("<input type='text' class='tuple_text_input' placeholder='value' name='value'/>").appendTo( $(this.div) );
 	this.value.change(tupleSet.changed);
-	//this.delButton = $("<a data-mini='true' class='text_button'/>").text(' [-]').appendTo( $(this.div) );
 	this.delButton = $('<input type="button" data-role="button" data-mini="true"/>').val("Delete");
 	this.delButton.on( "click", null, this, tupleSet.deleteItem ).appendTo( $(this.div) ); 
 	return this;
