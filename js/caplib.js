@@ -190,13 +190,30 @@ var Info = function() {
 	this.parameters = [];
 	this.areas = [];
 }
-
 Info.prototype.addCategory = function(category) {	// Geo, Met, Safety, Security, Rescue, Fire, Health, Env, Transport, Infra, CBRNE, Other
 	this.categories.push( category );
 }
-
 Info.prototype.addResponseType = function(responseType) {	// Shelter, Evacuate, Prepare,  Execute, Avoid, Monitor, Assess, AllClear
 	this.responseTypes.push( responseType );
+}
+Info.prototype.addEventCode = function(valueName, value) {
+	var eventCode = new EventCode(valueName, value);
+	this.eventCodes.push( eventCode );
+}
+
+Info.prototype.addParameter = function(valueName, value) {
+	var parameter = new Parameter(valueName, value);
+	this.parameters.push( parameter );
+}
+Info.prototype.addArea = function(areaDesc) {
+	var area = new Area(areaDesc);
+	this.areas.push( area );
+	return area;
+}
+Info.prototype.addResource = function(resourceDesc) {
+	var resource = new Resource(resourceDesc);
+	this.resources.push( resource );
+	return resource;
 }
 
 var EventCode = function(valueName,value) {
@@ -204,31 +221,23 @@ var EventCode = function(valueName,value) {
 	this.value;
 }
 
-Info.prototype.addEventCode = function(valueName, value) {
-	var eventCode = new EventCode(valueName, value);
-	this.eventCodes.push( eventCode );
-}
-
 var Parameter = function(valueName, value) {
 	this.valueName = valueName;
 	this.value = value;
 }
 
-Info.prototype.addParameter = function(valueName, value) {
-	var parameter = new Parameter(valueName, value);
-	this.parameters.push( parameter );
-}
 
-Info.prototype.addArea = function(areaDesc) {
-	var area = new Area(areaDesc);
-	this.areas.push( area );
-	return area;
+///////////////////////////////////////////////////////
+//RESOURCE Object
+var Resource = function(resourceDesc) {
+	this.resourceDesc = resourceDesc;	// REQUIRED
+	this.mimeType;
+	this.uri;
+	this.digest;
+	// note: derefURI is not implemented in this tool
 }
-
-Info.prototype.addResource = function(resourceDesc) {
-	var resource = new Resource(resourceDesc);
-	this.resources.push( resource );
-	return resource;
+Resource.prototype.getJSON = function() {
+	return JSON.stringify(this);
 }
 
 
@@ -242,30 +251,27 @@ var Area = function() {
 	this.altitude = "";
 	this.ceiling = "";
 }
-
 Area.prototype.addPolygon = function(polygon) {
 	this.polygons.push( polygon );
 }
-
 Area.prototype.addCircle = function(circle) {
 	this.circles.push( circle );
 }
-
+Area.prototype.addGeocode = function(valueName, value) {
+	var geocode = new Geocode(valueName,value);
+	this.geocodes.push( geocode );
+}
 var Geocode = function(valueName, value) {
 	this.valueName = valueName;
 	this.value = value;
 }
 
-Area.prototype.addGeocode = function(valueName, value) {
-	var geocode = new Geocode(valueName,value);
-	this.geocodes.push( geocode );
-}
-
+///////////////////////////////////////////////////////
+// UTILITIES
 
 //parse XML string into an Alert object
 function parseCAP2Alert( cap_xml ) {
 	var xml = $.parseXML( cap_xml );
-	
 	// populate new alert with values from XML
 	var alert = new Alert();
 	alert.identifier = "";	// any existing value goes in references
@@ -281,7 +287,6 @@ function parseCAP2Alert( cap_xml ) {
 	alert.note = $(xml).find("note").text();
 	alert.references = $(xml).find("identifier").text();
 	alert.incidents = $(xml).find("incidents").text();
-	
 	var info = alert.addInfo();  // only one Info is supported in current version!
 	info.lang = $(xml).find("lang").text();
 	$(xml).find("category").each( function() {
@@ -335,28 +340,12 @@ function parseCAP2Alert( cap_xml ) {
 	}	
 	area.altitude = $(xml).find("altitude").text();
 	area.ceiling = $(xml).find("ceiling").text();
-		
 	return alert;
 }
 
 
-
-///////////////////////////////////////////////////////
-// RESOURCE Object
-var Resource = function(resourceDesc) {
-	this.resourceDesc = resourceDesc;	// REQUIRED
-	this.mimeType;
-	this.uri;
-	this.digest;
-	// note: derefURI is not implemented in this tool
-}
-
-Resource.prototype.getJSON = function() {
-	return JSON.stringify(this);
-}
-
 //////////////////////////////////////////////////////
-// trivial example code (uncomment to test on load)
+// trivial example code (uncomment to test from command line)
 /*
 newAlert = new Alert();
 info = newAlert.addInfo();
