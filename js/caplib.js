@@ -268,9 +268,9 @@ function parseCAP2Alert( cap_xml ) {
 	
 	// populate new alert with values from XML
 	var alert = new Alert();
-	alert.identifier = $(xml).find("identifier").text();	
-	alert.sender = $(xml).find("sender").text();
-	alert.sent = $(xml).find("sent").text();
+	alert.identifier = "";	// any existing value goes in references
+	alert.sender = "";
+	alert.sent = "";
 	alert.status = $(xml).find("status").text();
 	alert.msgType = $(xml).find("msgType").text();
 	alert.source = $(xml).find("source").text();
@@ -279,7 +279,7 @@ function parseCAP2Alert( cap_xml ) {
 	alert.addresses = $(xml).find("addresses").text();
 	alert.code = $(xml).find("code").text();
 	alert.note = $(xml).find("note").text();
-	alert.references = $(xml).find("references").text();
+	alert.references = $(xml).find("identifier").text();
 	alert.incidents = $(xml).find("incidents").text();
 	
 	var info = alert.addInfo();  // only one Info is supported in current version!
