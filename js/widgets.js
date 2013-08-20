@@ -1,6 +1,6 @@
 /*
 	widgets.js -- various for CAPComposer
-	version 1.0 - 19 August 2013
+	version 1.0 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -26,14 +26,14 @@ CapTupleSetWidget.prototype = {
 		
 	addItem : function(event) {
 		var tupleSet = event.data;  // ref to tupleSet
-		var new_tuple = new CapTupleWidget( tupleSet, $(tupleSet.div).width() );
+		var new_tuple = new CapTupleWidget( tupleSet, 400 );
 		tupleSet.tuples.push( new_tuple );  // add to array
 		$(tupleSet.div).append( $(new_tuple.div) );  // add to screen
 		new_tuple.valueName.focus();  // and put focus on valueName field
 	},
 	
 	addAndPopulate : function( valueName, value ) {
-		var new_tuple = new CapTupleWidget( tupleSet, $(tupleSet.div).width() );
+		var new_tuple = new CapTupleWidget( this, 400 );
 		$(new_tuple.valueName).val( valueName );
 		$(new_tuple.value).val( value );
 		this.tuples.push( new_tuple );  // add to array
@@ -62,7 +62,7 @@ CapTupleSetWidget.prototype = {
 	removeAll : function() {  // remove all tuples from the set
 		for (var i=0; i < this.tuples.length; i++ ) {
 			var tuple = this.tuples[i];
-			this.tuples.splice( $.inArray(tuple, this.tuples), 1); // remove from array
+			this.tuples.splice( $.inArray(tuple, this.tuples), 1); // remove from array 
 			$(tuple.div).remove(); // and also remove from screen
 		}
 	},

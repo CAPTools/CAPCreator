@@ -88,6 +88,11 @@ $(document).on('pageshow', "#release", function() {
 	
 } );
 
+// Any time we go to the Map page, resize each of the Geocodes widgets
+$(document).on('pageshow',"#area", function () {
+	
+} );
+
 
 // Utility to escape HTML entities in user-supplied text
 function escape_text(rawText) {
@@ -118,19 +123,17 @@ function viewAlert( link ) {
 			$div.popup("open");
 			$span.append( styleAlert(xml) ); // THIS NEED TO BE FLESHED OUT, BELOW
 			var alert = parseCAP2Alert( xml );
+			alert.references = alert.sender + "," + alert.identifier + "," + alert.sent;
 			$("#cancel_button").click( function(e) { 
-				alert.references = alert.identifier;
 				alert.msgType = "Cancel";
-				alert2screen( alert );
+				alert2view( alert );
 				$.mobile.navigate("#alert");
 			} );
 			$("#update_button").click( function(e) { 
-				alert.references = alert.identifier;
 				alert.msgType = "Update";
-				alert2screen( alert );
+				alert2view( alert );
 				$.mobile.navigate("#alert");
 			} );
-			
 		},	
 	} );
 }
@@ -152,7 +155,7 @@ function view2model() {
 	alert.status = $("#select-status").val();
 	alert.msgType = $("#select-msgType").val();
 	alert.scope = $("#select-scope").val();
-	alert.references = $("#hidden_references").val();
+	alert.references = $("#hidden-references").val();
 	alert.source = escape_text( $("#text-source").val() );	
 	alert.note = escape_text( $("#textarea-note").val() ); 
 	info.categories = [];
@@ -175,11 +178,11 @@ function view2model() {
 	}
 	info.senderName = escape_text( $("#text-senderName").val() ); 
 	info.headline = escape_text( $("#text-headline").val() );  
-	info.description = escape_text( $("#text-description").val() );  
-	info.instruction = escape_text( $("#text-instruction").val() ); 
+	info.description = escape_text( $("#textarea-description").val() );  
+	info.instruction = escape_text( $("#textarea-instruction").val() ); 
 	info.contact = escape_text( $("#text-contact").val() ); 
 	if( parameter_set ) { info.parameters = parameter_set.getAll(); }
-	area.areaDesc = escape_text( $("#text-areaDesc").val() ); 	
+	area.areaDesc = escape_text( $("#textarea-areaDesc").val() ); 	
 	area.polygons = getPolygons(); // function getPolygons() from cap_map.js
 	area.circles = getCircles();  // function getCircles() from cap_map.js
 	if ( geocode_set ) { area.geocodes = geocode_set.getAll(); }
@@ -187,7 +190,7 @@ function view2model() {
 
 
 // submit alert JSON to server
-function submitAlert() {
+function sendAlert() {
 	var result_message = "";
 	var uid = $("#text-uid").val();
 	if ( !uid ) { uid = "none"; };
@@ -233,11 +236,13 @@ function submitAlert() {
 
 
 // update the screens with values from an Alert object
-function alert2screen( alert ) {
+function alert2view( alert ) {
+	var info = alert.infos[0];
+	var area = info.areas[0];
 	$("#select-status").val( alert.status ).selectmenu('refresh');
 	$("#select-msgType").val( alert.msgType ).selectmenu('refresh');
 	$("#select-scope").val( alert.scope ).selectmenu('refresh');
-	$("#hidden_references").val( alert.references );
+	$("#hidden-references").val( alert.references );
 	$("#select-categories").val( info.categories[0] ).selectmenu('refresh');  // only the first value is imported
 	$("#select-responseTypes").val( info.responseTypes[0] ).selectmenu('refresh'); // only the first value is imported
 	$("#select-urgency").val( info.urgency ).selectmenu('refresh');
@@ -251,31 +256,31 @@ function alert2screen( alert ) {
 	$("#text-contact").text( info.contact );
 	$("#text-source").text( info.source );
 	$("#textarea-note").text( info.note );
+	
 	// clear and reload parameter set in widget
 	parameter_set.removeAll();
 	$(area.parameters).each( function() {
-		var valueName = $(this).valueName;
-		var value = $(this).value;
-		parameter_set.addAndPopulate(valueName, value);
+		parameter_set.addAndPopulate( this.valueName, this.value );
 	} );
+	
+	// resources currently not implemented
 	$("#text-areaDesc").text( area.areaDesc );
+	
 	// clear and reload geocode set in widget
 	geocode_set.removeAll();
 	$(area.geocodes).each( function() {
-		var valueName = $(this).valueName;
-		var value = $(this).value;
-		geocode_set.addAndPopulate(valueName, value);
-
+		geocode_set.addAndPopulate( this.valueName, this.value );
 	} );
+	
 	// clear and reload polygons in map
 	drawingLayer.destroyFeatures();
 	$(area.polygons).each( function() {
-		addCapPolygonToMap( $(this).text() );
+		addCapPolygonToMap( String(this) );
 	} );
-	// clear and reload polygons in map
+	// clear and reload circles in map
 	$(area.circles).each( function() {
-		addCapCircleToMap( $(this).text() );
-	} );	
+		addCapCircleToMap( String(this) );
+	} );
 	// altitude is not imported
 	// ceiling is not imported	
 }
@@ -287,6 +292,3 @@ function styleAlert(cap_xml) {
 	var styled = "<pre>" + cap_xml + "</pre>";   // FOR NOW
 	return styled;
 }
-
-
-

@@ -197,7 +197,7 @@
 			    <option value="360">6 Hours</option>
 			</select>
 		</fieldset>	
-		<input type="hidden" id="hidden_references" name="hidden_references" value="" />
+		<input type="hidden" id="hidden-references" name="hidden-references" value="" />
 		
 		<br>	
 		
@@ -317,7 +317,7 @@
 
     <div data-role="content" data-role="content" class="jqm-content">
            
- 			<label class="field_label">Description of Alert Area:</label>
+ 			<label class="field_label">Description of Alert Area (REQUIRED):</label>
  			<textarea name="text-areaDesc" id="text-areaDesc" data-mini="true" placeholder="" onchange="view2model()"></textarea>
  			
  			<div id="map_panel">
@@ -376,7 +376,7 @@
 			<label class="field_label" style="margin-top 15px; margin-left:8px">Authorize Release:</label>
 		    <input type="text" name="text-uid" id="text-uid" data-mini="true" placeholder="User ID" width="20" value="">
 		    <input type="password" name="text-pwd" id="text-pwd" data-mini="true" placeholder="Password" value="">
-	    	<a onclick="submitAlert();" data-role="button" data-mini="true" data-icon="check" class="ui-mini-smaller" style="width:180px; margin-top:8px">Release Alert</a>
+	    	<a onclick="sendAlert();" data-role="button" data-mini="true" data-icon="check" class="ui-mini-smaller" style="width:180px; margin-top:8px">Release Alert</a>
     	</div>
     	
     	<span id="response_span"></span>

@@ -1,6 +1,6 @@
 /*
 	cap_map.js -- Map for authoring CAP geometries (circles and polygons)
-	version 0.9 - 6 August 2013
+	version 0.9 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -182,7 +182,6 @@ function addCapCircleToMap(circleString) {
 	var radius = parseFloat(parts[1]) * 1000;
 	var coords = parts[0].split(",");
 	var centerPoint = new OpenLayers.Geometry.Point( parseFloat(coords[1]), parseFloat(coords[0]) ).transform(Geographic,Mercator);
-	console.log(centerPoint)
 	var circle = new OpenLayers.Geometry.Polygon.createRegularPolygon(
 			centerPoint,
 			radius,

@@ -1,6 +1,6 @@
 /*
 	caplib.js -- Common Alerting Protocol 1.2 helper library
-	version 1.1.1 - 19 August 2013
+	version 1.1.1 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -11,7 +11,7 @@
 		new Alert() - returns an uninitialized Alert object
 		parseCAP2Alert() - turn a CAP XML string into an Alert object
 		Alert.getJSON() - returns the Alert (including included Infos, Resources and Elements) as a JSON string
-		Alert.getCAP() - returns the Alert at CAP 1.2 XML
+		Alert.getCAP() - returns the Alert as CAP 1.2 XML
 		Alert.addInfo() - adds an Info object to the Alert.infos array and returns the new Info object
 		Info.addCategory( string ) - adds a category value string to the Info.categories array (values are constrained in spec)
 		Info.addResponseType( string ) - adds a responseType value string to the Info.responseTypes array (values are constrained in spec)
@@ -99,8 +99,10 @@ Alert.prototype.getCAP = function() {
 			if (info.expires && info.expires != "") { xml = xml + indent + "<expires>" + info.expires + "</expires>\n"; }
 			if (info.senderName && info.senderName != "") { xml = xml + indent + "<senderName>" + info.senderName + "</senderName>\n"; }
 			if (info.headline && info.headline != "") { xml = xml + indent + "<headline>" + info.headline + "</headline>\n"; }
+			
 			if (info.description && info.description != "") { xml = xml + indent + "<description>" + info.description + "</description>\n"; }
 			if (info.instruction && info.instruction != "") { xml = xml + indent + "<instruction>" + info.instruction + "</instruction>\n"; }
+			
 			if (info.web && info.web != "") { xml = xml + indent + "<web>" + info.web + "</web>\n"; }
 			if (info.contact && info.contact != "") { xml = xml + indent + "<contact>" + info.contact + "</contact>\n"; }
 			if ( info.parameters && info.parameters.length ) {
@@ -130,6 +132,7 @@ Alert.prototype.getCAP = function() {
 					var area = info.areas[i];
 					xml = xml + indent + "<area>\n";
 					indent = "      ";
+					if ( area.areaDesc == "" ) { area.areaDesc = "Unspecified Area"; }
 					xml = xml + indent + "<areaDesc>" + area.areaDesc + "</areaDesc>\n";
 					if ( area.polygons && area.polygons.length ) {
 						for (var i = 0; i < area.polygons.length; i++ ) {
@@ -320,23 +323,18 @@ function parseCAP2Alert( cap_xml ) {
 		resource.digest = $(this).find("digest").text();
 	} );
 	$(xml).find("parameter").each( function() {
-		var parameter = info.addParameter();
-		parameter.valueName = $(this).find("valueName").text();
-		parameter.value = $(this).find("value").text();
+		var parameter = info.addParameter( $(this).find("valueName").text(), $(this).find("value").text() );
 	}  );
 	var area = info.addArea();  // Only one Area is supported in current version!
 	area.areaDesc = $(xml).find("areaDesc").text();
 	$(xml).find("polygon").each( function() {
-		$this = $(this);
 		area.addPolygon( $(this).text() );
 	}  );
-	$(xml).find("eventCode").each( function() {
-		info.addEventCode( $(this).text() );
+	$(xml).find("circle").each( function() {
+		area.addCircle( $(this).text() );
 	}  );
 	$(xml).find("geocode").each( function() {
-		var geocode = info.addGeocode();
-		geocode.valueName = $(this).find("valueName").text();
-		geocode.value = $(this).find("value").text();
+		var geocode = area.addGeocode( $(this).find("valueName").text(), $(this).find("value").text() );
 	}  );
 	area.altitude = $(xml).find("altitude").text();
 	area.ceiling = $(xml).find("ceiling").text();
