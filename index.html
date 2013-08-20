@@ -2,7 +2,7 @@
 <html>
 <!-- 
 	CAPCreator -- Common Alerting Protocol 1.2 composition tool
-	version 0.9 - 6 August 2013
+	version 0.9 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University 
 	All rights reserved.
@@ -120,7 +120,7 @@
     	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
     		<label for="select-categories" class="ui-hidden-accessible">Set Hazard Type</label>
 			<select name="select-categories" id="select-categories" data-mini="true" data-native-menu="false" onchange="view2model()">
-				<option value="Other">-Hazard Class-</option>
+				<option value="Other">--Hazard Class--</option>
 				<option value="Geo">Geophysical</option>
 			    <option value="Met">Weather</option>
 			    <option value="Safety">Public Safety</option>
@@ -136,7 +136,7 @@
 			</select>
 			<label for="select-responseTypes" class="ui-hidden-accessible">Response Type</label>
 			<select name="select-responseTypes" id="select-responseTypes" data-mini="true" data-native-menu="false" onchange="view2model()">
-				<option value="None">Recommended Action-</option>
+				<option value="None">--Recommended Action--</option>
 				<option value="Shelter">Take Shelter</option>
 			    <option value="Evacuate">Evacuate</option>
 			    <option value="Prepare">Make Preparations</option>
@@ -149,7 +149,7 @@
 			</select>	
 		</fieldset>
 		
-				<label class="field_label" >Message Priority:</label>
+		<label class="field_label" >Message Priority:</label>
 		<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
     		<label for="select-urgency" class="ui-hidden-accessible">Urgency</label>
 			<select name="select-urgency" id="select-urgency" data-mini="true" data-inline="true" onchange="view2model()">
@@ -197,6 +197,7 @@
 			    <option value="360">6 Hours</option>
 			</select>
 		</fieldset>	
+		<input type="hidden" id="hidden_references" name="hidden_references" value="" />
 		
 		<br>	
 		
