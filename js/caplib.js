@@ -1,6 +1,6 @@
 /*
 	caplib.js -- Common Alerting Protocol 1.2 helper library
-	version 1.1.1 - 18 August 2013
+	version 1.1.1 - 19 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -36,7 +36,7 @@ var Alert = function() {
 	this.addresses;
 	this.code;
 	this.note = "";
-	this.references;
+	this.references = "";
 	this.incidents;
 	this.infos = [];
 }
@@ -274,9 +274,9 @@ function parseCAP2Alert( cap_xml ) {
 	var xml = $.parseXML( cap_xml );
 	// populate new alert with values from XML
 	var alert = new Alert();
-	alert.identifier = "";	// any existing value goes in references
-	alert.sender = "";
-	alert.sent = "";
+	alert.identifier = $(xml).find("identifier").text();
+	alert.sender = $(xml).find("sender").text();
+	alert.sent = $(xml).find("sent").text();
 	alert.status = $(xml).find("status").text();
 	alert.msgType = $(xml).find("msgType").text();
 	alert.source = $(xml).find("source").text();
@@ -285,7 +285,7 @@ function parseCAP2Alert( cap_xml ) {
 	alert.addresses = $(xml).find("addresses").text();
 	alert.code = $(xml).find("code").text();
 	alert.note = $(xml).find("note").text();
-	alert.references = $(xml).find("identifier").text();
+	alert.references = $(xml).find("references").text();
 	alert.incidents = $(xml).find("incidents").text();
 	var info = alert.addInfo();  // only one Info is supported in current version!
 	info.lang = $(xml).find("lang").text();

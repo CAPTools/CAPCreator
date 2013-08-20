@@ -26,9 +26,14 @@ var Mercator = new OpenLayers.Projection("EPSG:3857");  // more modern (and offi
 
 var map, drawControls, drawingLayer, cap_area;
 
-$(document).delegate("#area",'pageshow', function() {  // waits unil the page is visible, 'sted "pageinit"
+// this is done in advance to support update and creates when the map hasn't been viewed yet
+$(document).delegate("#area",'pageinit', function() { // create drawingLayer immediately
+    drawingLayer = new OpenLayers.Layer.Vector("Drawing Layer");
+} );
+
+$(document).delegate("#area",'pageshow', function() {  // wait until the page is visible, to get div size
 	
-if ( ! map ){   // only initialize the map once!
+if ( ! map ) {   // only initialize the map once!
 	
 	if ( ! cap_area ) {
 		cap_area = new Area("Undesignated Area");  // constructor in caplib.js
@@ -50,13 +55,10 @@ if ( ! map ){   // only initialize the map once!
           	}
         );
     
-   var osmLayer = new OpenLayers.Layer.OSM( "OpenStreetMap" );
+    var osmLayer = new OpenLayers.Layer.OSM( "OpenStreetMap" );
     osmLayer.setVisibility(false);
     
-  	// create drawing layer
-    drawingLayer = new OpenLayers.Layer.Vector("Drawing Layer");
-    
-    // add all layers to map
+  	// add all layers to map
     map.addLayers( [ gphyLayer, osmLayer, drawingLayer ] );
 
     // create draw controls
