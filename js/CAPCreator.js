@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9 - 19 August 2013
+	version 0.9 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -111,19 +111,25 @@ function viewAlert( link ) {
 		url: link,
 		dataType: "xml",
 		success: function(data, status, jqXHR) {
+			var xml = jqXHR.responseText;
 			var $div = $("#alert_view_div");
 			var $span = $("#alert_view_span");
 			$span.html("");
 			$div.popup("open");
-			$span.append( styleAlert(jqXHR.responseText) ); // THIS NEED TO BE FLESHED OUT, BELOW
-			$("#cancel_button").click( function(e) { console.log("cancel clicked"); } );
-			$("#update_button").click( function(e) { console.log("update clicked"); } );
-			
-			// DISABLE BUTTONS FOR NOW, PENDING COMPLETION OF THE ABOVE FUNCTIONS
-			$("#update_button").button('disable');
-			$("#update_button").button('refresh');
-			$("#cancel_button").button('disable');
-			$("#cancel_button").button('refresh');
+			$span.append( styleAlert(xml) ); // THIS NEED TO BE FLESHED OUT, BELOW
+			var alert = parseCAP2Alert( xml );
+			$("#cancel_button").click( function(e) { 
+				alert.references = alert.identifier;
+				alert.msgType = "Cancel";
+				alert2screen( alert );
+				$.mobile.navigate("#alert");
+			} );
+			$("#update_button").click( function(e) { 
+				alert.references = alert.identifier;
+				alert.msgType = "Update";
+				alert2screen( alert );
+				$.mobile.navigate("#alert");
+			} );
 			
 		},	
 	} );
@@ -146,6 +152,7 @@ function view2model() {
 	alert.status = $("#select-status").val();
 	alert.msgType = $("#select-msgType").val();
 	alert.scope = $("#select-scope").val();
+	alert.references = $("#hidden_references").val();
 	alert.source = escape_text( $("#text-source").val() );	
 	alert.note = escape_text( $("#textarea-note").val() ); 
 	info.categories = [];
@@ -230,6 +237,7 @@ function alert2screen( alert ) {
 	$("#select-status").val( alert.status ).selectmenu('refresh');
 	$("#select-msgType").val( alert.msgType ).selectmenu('refresh');
 	$("#select-scope").val( alert.scope ).selectmenu('refresh');
+	$("#hidden_references").val( alert.references );
 	$("#select-categories").val( info.categories[0] ).selectmenu('refresh');  // only the first value is imported
 	$("#select-responseTypes").val( info.responseTypes[0] ).selectmenu('refresh'); // only the first value is imported
 	$("#select-urgency").val( info.urgency ).selectmenu('refresh');
@@ -245,29 +253,29 @@ function alert2screen( alert ) {
 	$("#textarea-note").text( info.note );
 	// clear and reload parameter set in widget
 	parameter_set.removeAll();
-	var params = $(xml).find("parameter").each( function() {
-		var valueName = $(this).find("valueName").text();
-		var value = $(this).find("value").text();
+	$(area.parameters).each( function() {
+		var valueName = $(this).valueName;
+		var value = $(this).value;
 		parameter_set.addAndPopulate(valueName, value);
 	} );
 	$("#text-areaDesc").text( area.areaDesc );
 	// clear and reload geocode set in widget
 	geocode_set.removeAll();
-	$(xml).find("geocode").each( function() {
-		var valueName = $(this).find("valueName").text();
-		var value = $(this).find("value").text();
+	$(area.geocodes).each( function() {
+		var valueName = $(this).valueName;
+		var value = $(this).value;
 		geocode_set.addAndPopulate(valueName, value);
 
 	} );
 	// clear and reload polygons in map
-	map.clearAll();
-	$(xml).find("polygon").each( function() {
-		map.addCapPolygonToMap( $(this).text() );
+	drawingLayer.destroyFeatures();
+	$(area.polygons).each( function() {
+		addCapPolygonToMap( $(this).text() );
 	} );
 	// clear and reload polygons in map
-	$(xml).find("circle").each( function() {
-		map.addCapCircleToMap( $(this).text() );
-	} );
+	$(area.circles).each( function() {
+		addCapCircleToMap( $(this).text() );
+	} );	
 	// altitude is not imported
 	// ceiling is not imported	
 }
