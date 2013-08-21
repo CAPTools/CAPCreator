@@ -1,6 +1,6 @@
 /*
 	CAPCreator.css -- styles for CAPCreator
-	version 0.9 - 4 August 2013
+	version 0.9 - 20 August 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -165,4 +165,16 @@ input[type=button] {
 	margin: 0px 0px 6px 0px;
 	font-size: 0.9em;
 	font-weight: bold;	
+}
+
+.html_table {
+	font-size: 0.9em;
+}
+
+.html_label_cell {
+	font-weight: bold;
+	font-size: 0.7em;
+	background-color: #e0e0e0;
+	padding: 0px 3px 0px 3px;
+	text-align:right;
 }

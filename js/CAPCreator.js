@@ -121,7 +121,7 @@ function viewAlert( link ) {
 			var $span = $("#alert_view_span");
 			$span.html("");
 			$div.popup("open");
-			$span.append( styleAlert(xml) ); // THIS NEED TO BE FLESHED OUT, BELOW
+			$span.append( styleAlert(xml) );
 			var alert = parseCAP2Alert( xml );
 			alert.references = alert.sender + "," + alert.identifier + "," + alert.sent;
 			$("#cancel_button").click( function(e) { 
@@ -289,6 +289,30 @@ function alert2view( alert ) {
 // style CAP XML string as HTML
 function styleAlert(cap_xml) {
 	var xml = $.parseXML( cap_xml );
-	var styled = "<pre>" + cap_xml + "</pre>";   // FOR NOW
-	return styled;
+	var alert = parseCAP2Alert( cap_xml );
+	var info = alert.infos[0];
+	var area = info.areas[0];
+	// create HTML fragment (suitable to insert into a div)
+	var html = "<table class='html_table'>\n" +
+"<tr><td class='html_label_cell'>headline</td><td colspan='5'>" + info.headline + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>senderName</td><td colspan='5'>" + info.senderName + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>sender</td><td>" + alert.sender + "</td><td class='html_label_cell'>sent</td>" +
+	"<td colspan='3'>" + alert.sent + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>status</td><td>" + alert.status + "</td><td class='html_label_cell'>msgType</td>" +
+	"<td colspan='3'>" + alert.msgType + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>urgency</td><td>" + info.urgency + "</td>" +
+	"<td class='html_label_cell'>severity</td><td>" + info.severity + "</td>" +
+	"<td class='html_label_cell'>certainty</td><td>" + info.certainty + "</td>" +
+	"</tr>\n" +
+"<tr><td class='html_label_cell'>response</td><td colspan='5'>" + info.response + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>areaDesc</td><td colspan='5'>" + area.areaDesc + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>description</td><td colspan='5'>" + info.description + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>instruction</td><td colspan='5'>" + info.instruction + "</td></tr>\n"+
+"<tr><td class='html_label_cell'>expires</td><td colspan='5'>" + info.expires + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>identifier</td><td colspan='5'>" + alert.identifier + "</td></tr>\n" +
+"<tr><td class='html_label_cell'>category</td><td>" + info.categories[0] + "</td>" +
+"<td class='html_label_cell'>event</td><td colspan='3'>" + info.event + "</td>" + 
+	"</tr>\n" +
+	"</table>\n";   
+	return html;
 }
