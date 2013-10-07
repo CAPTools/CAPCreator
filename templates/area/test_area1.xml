@@ -1,0 +1,28 @@
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>ca15f4ac-7ee9-4391-a9da-a75f1c3374dd</identifier>
+  <sender>none@incident.com</sender>
+  <sent>2013-08-20T21:50:52+00:00</sent>
+  <status>Actual</status>
+  <msgType>Update</msgType>
+  <scope>Public</scope>
+  <note>Created using CAPCreator0.9</note>
+  <references>none@incident.com,7e43a818-ce4f-4a70-81e3-c0e1abe5f6d2,2013-08-20T20:01:50+00:00</references>
+  <info>
+    <language>en-us</language>
+    <category>Env</category>
+    <event/>
+    <responseType>AllClear</responseType>
+    <urgency>Expected</urgency>
+    <severity>Severe</severity>
+    <certainty>Possible</certainty>
+    <expires>2013-08-20T22:50:52+00:00</expires>
+    <description>This is the description</description>
+    <instruction>This is the instruction</instruction>
+    <area>
+      <areaDesc>This is a very special area</areaDesc>
+      <polygon>13.63724,100.36765 13.82267,100.44044 13.70796,100.55167 13.60654,100.46790 13.63724,100.36765</polygon>
+      <circle>13.85867,100.14381 14.29924</circle>
+    </area>
+  </info>
+</alert>
+

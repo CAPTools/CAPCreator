@@ -1,0 +1,6 @@
+{ 
+"templates" : [ 
+	{ "label":"First Test Message", "link":"templates/message/test_msg1.xml" },
+	{ "label":"Second Test Message", "link":"templates/message/test_msg1.xml" }
+] 
+}

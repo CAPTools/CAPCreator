@@ -2,7 +2,7 @@
 <html>
 <!-- 
 	CAPCreator -- Common Alerting Protocol 1.2 composition tool
-	version 0.9 - 20 August 2013
+	version 0.9.1 - 7 October 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University 
 	All rights reserved.
@@ -57,7 +57,32 @@
 	 				style="whitespace:normal; width:140px"/>
  			</fieldset>
  		</div>
-    	
+ 		
+ 		
+ 		</br>
+ 		<a href="#popup-about" data-rel="popup" data-role="button" data-mini="true" class="ui-mini" style="width:200px; font-style:italic; font-weight:normal">About CAPCreator&trade;</a>
+ 		<div class="about_div" id="popup-about" data-role="popup" data-mini="true">
+ 			<h3>About CAPCreator</h3>
+	    	<span id="alert-info" class="info_block">
+		    	<b>CAPCreator&trade;</b> is a simple tool for authoring alerts and other messages using the 
+		    	<a href="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html" target="_blank">Common Alerting Protocol (v1.2)</a>. 
+		    	A few noteworthy restrictions on the current version:
+		    	<ul>
+		    		<li>Only one language can be used in a single message (however multiple messages can be authored to address multilingual
+		    		 alerting requirements);
+		    		<li>Only one target area can be specified for an individual alert message (but it may include multiple polygons and/or circles); 
+		    		and,
+		    		<li>Messages are assumed to be effective immediately.
+		    	</ul>
+		    	<p><b>CAPCreator</b> is designed to integrate with the <b>CAPCollector&trade;</b> 
+		    	server for XML serialization, sender authentication, digital signature, alert forwarding and local alert aggregation, and the
+		    	<b>CAPConsumer&trade;</b> framework for CAP message injestion and display.</p>
+		    	<p><b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are open source projects copyright Carnegie Mellon University 
+		    	and published under the Modified (3-clause) BSD License.  See source files for full copyright and licensing notices.  
+		    	<b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are trademarks of Carnegie Mellon University.</p>
+	    	</span>
+	    </div>			
+ 		 	
     </div><!-- /content -->
     
     <div data-role="footer" data-id="cc_nav" data-position="fixed">
@@ -65,7 +90,7 @@
 			<ul>
 				<li><a href="#current" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Current</a></li>
 				<li><a href="#alert" data-prefetch="true" data-transition="none" >New</a></li>
-				<li><a href="#info" data-prefetch="true" data-transition="none">Details</a></li>
+				<li><a href="#info" data-prefetch="true" data-transition="none">Message</a></li>
 				<li><a href="#area" data-prefetch="true" data-transition="none">Area</a></li>
 				<li><a href="#release" data-prefetch="true" data-transition="none">Release</a></li>
 			</ul>
@@ -91,8 +116,12 @@
 
     <div data-role="content" class="jqm-content" >
     
-     	<div class="subhead">Issue Alert (Authorization Required)</div>
-    
+    	<label class="field_label">Load Message Template (Optional):</label>
+	    <select name="select-message-template" id="select-message-template" data-mini="true" data-inline="true" onchange="loadMessageTemplate()">
+			<option value="None">None</option>
+		</select>
+
+    	<div class="form_row_div">
     	<label class="field_label" >Set Type of Message:</label>
     	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">  
 	    	<label for="select-status" class="ui-hidden-accessible">Status</label>
@@ -115,8 +144,10 @@
 			    <option value="Private">Private</option>
 			</select>
 		</fieldset>
+		</div>
 		
-		   	<label class="field_label">Set Hazard Type and Recommended Protective Action:</label>
+		<div class="form_row_div">
+		<label class="field_label">Set Hazard Type and Recommended Protective Action:</label>
     	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
     		<label for="select-categories" class="ui-hidden-accessible">Set Hazard Type</label>
 			<select name="select-categories" id="select-categories" data-mini="true" data-native-menu="false" onchange="view2model()">
@@ -148,7 +179,9 @@
 			    <option value="Assess">Evaluate Situation [not for Public alerts]</option>
 			</select>	
 		</fieldset>
+		</div>
 		
+		<div class="form_row_div">
 		<label class="field_label" >Set Message Priority:</label>
 		<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
     		<label for="select-urgency" class="ui-hidden-accessible">Urgency</label>
@@ -179,7 +212,9 @@
 			    <option value="Unknown">Unknown</option>
 			</select>
 		</fieldset>
+		</div>
 		
+		<div class="form_row_div">
 		<label class="field_label" >Set Alert Expiration</label>
 		<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
     		<label for="select-expires-min" class="ui-hidden-accessible">Time to Expiration</label>
@@ -197,39 +232,15 @@
 			    <option value="360">6 Hours</option>
 			</select>
 		</fieldset>	
+		</div>
 		<input type="hidden" id="hidden-references" name="hidden-references" value="" />
 		
 		<br>	
 		
-		<a href="#info" data-role="button" data-mini="true" class="ui-mini-smaller" data-icon="arrow-r" 
+		<a href="#info" data-role="button" data-mini="true" class="ui-mini" data-icon="arrow-r" 
  			data-iconpos="right" style="whitespace:normal; width:200px" >NEXT: Add Alert Details</a>
  			
- 		<br/>	
- 		<hr/>	
- 		
- 		<a href="#popup-about" data-rel="popup" data-role="button" data-mini="true">About CAPCreator&trade;</a>
- 		<div class="about_div" id="popup-about" data-role="popup" data-mini="true">
- 			<h3>About CAPCreator</h3>
-	    	<span id="alert-info" class="info_block">
-		    	<b>CAPCreator&trade;</b> is a simple tool for authoring alerts and other messages using the 
-		    	<a href="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html" target="_blank">Common Alerting Protocol (v1.2)</a>. 
-		    	A few notable limits on the current version:
-		    	<ul>
-		    		<li>Only one language can be used in a single message (however multiple messages can be authored to address multilingual
-		    		 alerting requirements);
-		    		<li>Only one target area can be specified for an individual alert message (but it may include multiple polygons and/or circles); 
-		    		and,
-		    		<li>Messages are assumed to be effective immediately.
-		    	</ul>
-		    	<p><b>CAPCreator</b> is designed to integrate with the <b>CAPCollector&trade;</b> 
-		    	server for XML serialization, sender authentication, digital signature, alert forwarding and local alert aggregation, and the
-		    	<b>CAPConsumer&trade;</b> framework for CAP message injestion and display.</p>
-		    	<p><b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are open source projects copyright Carnegie Mellon University 
-		    	and published under the Modified (3-clause) BSD License.  See source files for full copyright and licensing notices.  
-		    	<b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are trademarks of Carnegie Mellon University.</p>
-	    	</span>
-	    </div>			
-    		
+ 		    		
     </div><!-- /content -->
 
 	<div data-role="footer" data-id="cc_nav" data-position="fixed">
@@ -237,7 +248,7 @@
 			<ul>
 				<li><a href="#current" data-prefetch="true" data-transition="none">Current</a></li>
 				<li><a href="#alert" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">New</a></li>
-				<li><a href="#info" data-prefetch="true" data-transition="none">Details</a></li>
+				<li><a href="#info" data-prefetch="true" data-transition="none">Message</a></li>
 				<li><a href="#area" data-prefetch="true" data-transition="none">Area</a></li>
 				<li><a href="#release" data-prefetch="true" data-transition="none">Release</a></li>
 			</ul>
@@ -298,7 +309,7 @@
 			<ul>
 				<li><a href="#current" data-prefetch="true" data-transition="none">Current</a></li>
 				<li><a href="#alert" data-prefetch="true" data-transition="none" >New</a></li>
-				<li><a href="#info" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Details</a></li>
+				<li><a href="#info" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Message</a></li>
 				<li><a href="#area" data-prefetch="true" data-transition="none">Area</a></li>
 				<li><a href="#release" data-prefetch="true" data-transition="none">Release</a></li>
 			</ul>
@@ -316,32 +327,36 @@
     </div><!-- /header -->
 
     <div data-role="content" data-role="content" class="jqm-content">
+    
+    	<select name="select-area-template" id="select-area-template" data-mini="true" data-inline="true" onchange="loadAreaTemplate()">
+			<option value="None">Select Area Template (Optional)</option>
+		</select>
            
- 			<label class="field_label">Description of Alert Area (REQUIRED):</label>
- 			<textarea name="text-areaDesc" id="text-areaDesc" data-mini="true" placeholder="" onchange="view2model()"></textarea>
- 			
- 			<div id="map_panel">
-        		<div id="map" class="largemap" ></div>
-        	    <div id="radius"></div>
-        	</div>
-        
-			<div id="mode_panel">
-	       		<fieldset data-role="controlgroup" data-mini="true" data-type="horizontal" data-inline="true">
-	        		<input type="radio" name="map_mode" value="none" id="noneToggle" onclick="clearPrompt(); toggleControl(this);" checked="checked" />
-	        		<label for="noneToggle">Drag</label>
-	        		<input type="radio" name="map_mode" value="circle" id="circleToggle" onclick="toggleControl(this);" />
-	        		<label for="circleToggle">Circle</label>
-	        		<input type="radio" name="map_mode" value="polygon" id="polygonToggle" onclick="showPrompt(); toggleControl(this);" class="ui-mini-smaller"/>
-	       			<label for="polygonToggle">Shape</label>
-	       			<a onclick="clearLast()" data-role="button" class="ui-mini-smaller">Clear Last</a>
-	        		<a onclick="clearAll()" data-role="button" class="ui-mini-smaller">Clear All</a>
-	  			</fieldset>
-	       	</div>
+		<label class="field_label">Description of Alert Area (REQUIRED):</label>
+		<textarea name="text-areaDesc" id="text-areaDesc" data-mini="true" placeholder="" onchange="view2model()"></textarea>
+			
+		<div id="map_panel">
+       		<div id="map" class="largemap" ></div>
+       	    <div id="radius"></div>
+       	</div>
+       
+		<div id="mode_panel">
+       		<fieldset data-role="controlgroup" data-mini="true" data-type="horizontal" data-inline="true">
+        		<input type="radio" name="map_mode" value="none" id="noneToggle" onclick="clearPrompt(); toggleControl(this);" checked="checked" />
+        		<label for="noneToggle">Drag</label>
+        		<input type="radio" name="map_mode" value="circle" id="circleToggle" onclick="toggleControl(this);" />
+        		<label for="circleToggle">Circle</label>
+        		<input type="radio" name="map_mode" value="polygon" id="polygonToggle" onclick="showPrompt(); toggleControl(this);" class="ui-mini-smaller"/>
+       			<label for="polygonToggle">Shape</label>
+       			<a onclick="clearLast()" data-role="button" class="ui-mini-smaller">Clear Last</a>
+        		<a onclick="clearAll()" data-role="button" class="ui-mini-smaller">Clear All</a>
+  			</fieldset>
+       	</div>
 
-	  		<div id="geocode_div"></div>
-	  		
-	  		<a href="#release" type="button" data-mini="true" class="ui-mini-smaller" data-icon="arrow-r" 
- 				data-iconpos="right" style="whitespace:normal; margin-top:8px; width:200px" >NEXT: Review &amp; Release</a>
+  		<div id="geocode_div"></div>
+  		
+  		<a href="#release" type="button" data-mini="true" class="ui-mini-smaller" data-icon="arrow-r" 
+				data-iconpos="right" style="whitespace:normal; margin-top:8px; width:200px" >NEXT: Review &amp; Release</a>
 
 	</div><!-- /content -->
 
@@ -350,7 +365,7 @@
 			<ul>
 				<li><a href="#current" data-prefetch="true" data-transition="none">Current</a></li>
 				<li><a href="#alert" data-prefetch="true" data-transition="none" >New</a></li>
-				<li><a href="#info" data-prefetch="true" data-transition="none">Details</a></li>
+				<li><a href="#info" data-prefetch="true" data-transition="none">Message</a></li>
 				<li><a href="#area" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Area</a></li>
 				<li><a href="#release" data-prefetch="true" data-transition="none">Release</a></li>
 			</ul>
@@ -388,7 +403,7 @@
 			<ul>
 				<li><a href="#current" data-prefetch="true" data-transition="none">Current</a></li>
 				<li><a href="#alert" data-prefetch="true" data-transition="none" >New</a></li>
-				<li><a href="#info" data-prefetch="true" data-transition="none" >Details</a></li>
+				<li><a href="#info" data-prefetch="true" data-transition="none" >Message</a></li>
 				<li><a href="#area" data-prefetch="true" data-transition="none">Area</a></li>
 				<li><a href="#release" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Release</a></li>
 			</ul>

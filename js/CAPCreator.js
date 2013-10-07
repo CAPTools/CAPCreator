@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9 - 20 August 2013
+	version 0.9.1 - 7 October 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -10,10 +10,14 @@
 	DEPENDENCIES AND REQUIREMENTS:
 		OpenLayers, jQuery, jQuery Mobile and Moment.js, as well as local libraries
 		config.js, caplib.js cap_map.js and widgets.js must be loaded in the HTML first
+		
+		Current alerts are in web subdirectory data with an index in index.atom.
+		Templates for areas are in the web subdirectory templates/message, with a collection of label/filename pairs in index.json.
+		Templates for areas are in the web subdirectory templates/area, with a collection of label/filename pairs in index.json.
 		 
 */
 
-var versionID = "0.9"
+var versionID = "0.9.1"
 var submitUrl = config.CAPCollectorSubmitURL;
 var atomUrl = config.CAPCollectorBaseURL + "/index.atom";
 var max_headline_length = 140;
@@ -24,6 +28,9 @@ var area = info.addArea();
 
 var parameter_set;
 var geocode_set;
+
+var area_templates;
+var message_templates;
 
 
 // On initialization pick up default language
@@ -40,6 +47,34 @@ $(document).on('pageinit', "#info", function() {
 } );
 $(document).on('pageinit', "#area", function() { 
 	geocode_set = new CapTupleSetWidget( "Geocode", area, $('#geocode_div') );
+} );
+
+
+// When initializing new page, load list of available message templates
+$(document).on('pageinit', "#alert", function() { 
+	$.getJSON( "templates/message/index.json" )
+		.done( function(json) { 
+			$.each(json.templates, function() {
+				$("#select-message-template").append( new Option(this.label, this.link) );
+			});
+		} )
+		.fail( function (jqxhr, textStatus, error) {
+			console.log( "Can't load message templates: " + error );
+	} );
+} );
+
+
+// When initializing area page, load list of available area templates
+$(document).on('pageinit', "#area", function() { 
+	$.getJSON( "templates/area/index.json" )
+		.done( function(json) { 
+			$.each(json.templates, function() {
+				$("#select-area-template").append( new Option(this.label, this.link) );
+			});
+		} )
+		.fail( function (jqxhr, textStatus, error) {
+			console.log( "Can't load area templates: " + error );
+	} );
 } );
 
 
@@ -115,13 +150,14 @@ function viewAlert( link ) {
 	$.ajax( { 
 		url: link,
 		dataType: "xml",
+		cache: false,
 		success: function(data, status, jqXHR) {
 			var xml = jqXHR.responseText;
 			var $div = $("#alert_view_div");
 			var $span = $("#alert_view_span");
 			$span.html("");
 			$div.popup("open");
-			$span.append( styleAlert(xml) );
+			$span.append( cap2html(xml) );
 			var alert = parseCAP2Alert( xml );
 			alert.references = alert.sender + "," + alert.identifier + "," + alert.sent;
 			$("#cancel_button").click( function(e) { 
@@ -136,6 +172,74 @@ function viewAlert( link ) {
 			} );
 		},	
 	} );
+}
+
+
+// load an area template
+function loadAreaTemplate() {
+	var link = $("#select-area-template").find(":selected").val();
+	console.log( link );
+	$.ajax( {
+		url: link,
+		dataType: "xml",
+		cache: false,
+		success: function(data, status, jqXHR) {
+			var xml = jqXHR.responseText;
+			var alert = parseCAP2Alert( xml );
+			// load area fields into the current view
+			var info = alert.infos[0];
+			var area = info.areas[0];
+			console.log( area.areaDesc );
+			$("#text-areaDesc").text( area.areaDesc );
+			geocode_set.removeAll();
+			$(area.geocodes).each( function() {
+				geocode_set.addAndPopulate( this.valueName, this.value );
+			} );
+			drawingLayer.destroyFeatures();
+			$(area.polygons).each( function() {
+				addCapPolygonToMap( String(this) );
+			} );
+			$(area.circles).each( function() {
+				addCapCircleToMap( String(this) );
+			} );
+		},
+	});
+}
+
+
+//load a message template
+function loadMessageTemplate() {
+	var link = $("#select-message-template").find(":selected").val();
+	$.ajax( {
+		url: link,
+		dataType: "xml",
+		cache: false,
+		success: function(data, status, jqXHR) {
+			var xml = jqXHR.responseText;
+			var alert = parseCAP2Alert( xml );
+			console.log( alert );
+			// load message fields into the current view
+			var info = alert.infos[0];
+			$("#select-status").val( alert.status ).selectmenu('refresh');
+			$("#select-msgType").val( alert.msgType ).selectmenu('refresh');
+			$("#select-scope").val( alert.scope ).selectmenu('refresh');
+			$("#select-categories").val( info.categories[0] ).selectmenu('refresh');  // only the first value is imported
+			$("#select-responseTypes").val( info.responseTypes[0] ).selectmenu('refresh'); // only the first value is imported
+			$("#select-urgency").val( info.urgency ).selectmenu('refresh');
+			$("#select-severity").val( info.severity ).selectmenu('refresh');
+			$("#select-certainty").val( info.certainty ).selectmenu('refresh');
+			$("#text-headline").text( info.headline );
+			$("#textarea-description").text( info.description );
+			$("#textarea-instruction").text( info.instruction );
+			$("#textarea-note").text( info.note );
+			
+			// clear and reload parameter set in widget
+			parameter_set.removeAll();
+			$(area.parameters).each( function() {
+				parameter_set.addAndPopulate( this.valueName, this.value );
+			} );
+		},
+	});
 }
 
 
@@ -264,6 +368,7 @@ function alert2view( alert ) {
 	} );
 	
 	// resources currently not implemented
+	
 	$("#text-areaDesc").text( area.areaDesc );
 	
 	// clear and reload geocode set in widget
@@ -287,7 +392,7 @@ function alert2view( alert ) {
 
 
 // style CAP XML string as HTML
-function styleAlert(cap_xml) {
+function cap2html(cap_xml) {
 	var xml = $.parseXML( cap_xml );
 	var alert = parseCAP2Alert( cap_xml );
 	var info = alert.infos[0];

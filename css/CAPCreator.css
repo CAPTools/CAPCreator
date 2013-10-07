@@ -45,7 +45,7 @@
 }
 
 .jqm-content {
-	margin: 2px 10px 5px 0px;
+	margin: 2px 0px 5px 0px;
 }
 
 .jqm-footer {
@@ -126,7 +126,6 @@ input[type=button] {
 .field_label {
 	font-size: 0.7em;
 	font-weight:bold;
-	margin-top: 10px;
 }
 
 #headline_length {
@@ -163,7 +162,7 @@ input[type=button] {
 
 .subhead {
 	margin: 0px 0px 6px 0px;
-	font-size: 0.9em;
+	font-size: 1em;
 	font-weight: bold;	
 }
 
@@ -177,4 +176,8 @@ input[type=button] {
 	background-color: #e0e0e0;
 	padding: 0px 3px 0px 3px;
 	text-align:right;
+}
+
+.form_row_div {
+	margin-top: 12px;
 }

@@ -1,0 +1,6 @@
+{ 
+"templates" : [ 
+	{ "label":"First Test Area", "link":"templates/area/test_area1.xml" },
+	{ "label":"Second Test Area", "link":"templates/area/test_area1.xml" }
+] 
+}
