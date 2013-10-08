@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9.1 - 7 October 2013
+	version 0.9.1 - 8 October 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -14,6 +14,16 @@
 		Current alerts are in web subdirectory data with an index in index.atom.
 		Templates for areas are in the web subdirectory templates/message, with a collection of label/filename pairs in index.json.
 		Templates for areas are in the web subdirectory templates/area, with a collection of label/filename pairs in index.json.
+		
+		Example of an index.json file:
+			-----------------
+			{ 
+			"templates" : [ 
+				{ "label":"First Test Area", "link":"templates/area/test_area1.xml" },
+				{ "label":"Second Test Area", "link":"templates/area/test_area2.xml" }
+			] 
+			}
+			-----------------
 		 
 */
 
@@ -178,7 +188,6 @@ function viewAlert( link ) {
 // load an area template
 function loadAreaTemplate() {
 	var link = $("#select-area-template").find(":selected").val();
-	console.log( link );
 	$.ajax( {
 		url: link,
 		dataType: "xml",
@@ -186,10 +195,8 @@ function loadAreaTemplate() {
 		success: function(data, status, jqXHR) {
 			var xml = jqXHR.responseText;
 			var alert = parseCAP2Alert( xml );
-			// load area fields into the current view
 			var info = alert.infos[0];
 			var area = info.areas[0];
-			console.log( area.areaDesc );
 			$("#text-areaDesc").text( area.areaDesc );
 			geocode_set.removeAll();
 			$(area.geocodes).each( function() {
@@ -217,7 +224,7 @@ function loadMessageTemplate() {
 		success: function(data, status, jqXHR) {
 			var xml = jqXHR.responseText;
 			var alert = parseCAP2Alert( xml );
-			console.log( alert );
+			var info = alert.infos[0];;
 			// load message fields into the current view
 			var info = alert.infos[0];
 			$("#select-status").val( alert.status ).selectmenu('refresh');
@@ -231,10 +238,10 @@ function loadMessageTemplate() {
 			$("#text-headline").text( info.headline );
 			$("#textarea-description").text( info.description );
 			$("#textarea-instruction").text( info.instruction );
-			$("#textarea-note").text( info.note );
-			
+			$("#textarea-note").val( alert.note );
 			// clear and reload parameter set in widget
 			parameter_set.removeAll();
+			
 			$(area.parameters).each( function() {
 				parameter_set.addAndPopulate( this.valueName, this.value );
 			} );
@@ -359,7 +366,7 @@ function alert2view( alert ) {
 	$("#textarea-instruction").text( info.instruction );
 	$("#text-contact").text( info.contact );
 	$("#text-source").text( info.source );
-	$("#textarea-note").text( info.note );
+	$("#textarea-note").text( area.note );
 	
 	// clear and reload parameter set in widget
 	parameter_set.removeAll();
