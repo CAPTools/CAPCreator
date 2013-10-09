@@ -197,7 +197,7 @@ function loadAreaTemplate() {
 			var alert = parseCAP2Alert( xml );
 			var info = alert.infos[0];
 			var area = info.areas[0];
-			$("#text-areaDesc").text( area.areaDesc );
+			$("#textarea-areaDesc").text( area.areaDesc );
 			geocode_set.removeAll();
 			$(area.geocodes).each( function() {
 				geocode_set.addAndPopulate( this.valueName, this.value );
@@ -293,7 +293,7 @@ function view2model() {
 	info.instruction = escape_text( $("#textarea-instruction").val() ); 
 	info.contact = escape_text( $("#text-contact").val() ); 
 	if( parameter_set ) { info.parameters = parameter_set.getAll(); }
-	area.areaDesc = escape_text( $("#textarea-areaDesc").val() ); 	
+	area.areaDesc = escape_text( $("#textarea-areaDesc").val() ); 
 	area.polygons = getPolygons(); // function getPolygons() from cap_map.js
 	area.circles = getCircles();  // function getCircles() from cap_map.js
 	if ( geocode_set ) { area.geocodes = geocode_set.getAll(); }
@@ -376,7 +376,7 @@ function alert2view( alert ) {
 	
 	// resources currently not implemented
 	
-	$("#text-areaDesc").text( area.areaDesc );
+	$("#textarea-areaDesc").text( area.areaDesc );
 	
 	// clear and reload geocode set in widget
 	geocode_set.removeAll();
