@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9.1 - 8 October 2013
+	version 0.9.2 - 29 November 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -27,7 +27,7 @@
 		 
 */
 
-var versionID = "0.9.1"
+var versionID = "0.9.2"
 var submitUrl = config.CAPCollectorSubmitURL;
 var atomUrl = config.CAPCollectorBaseURL + "/index.atom";
 var max_headline_length = 140;
@@ -120,16 +120,15 @@ $(document).on('pageshow', "#current", function() {
 } );
 
 
-// Any time we go to the Review page, show the CAP XML
+// Any time we go to the Review page, show the CAP XML, clear the authentication
 $(document).on('pageshow', "#release", function() { 
 	$("#response_span").html("");  // clear the response message
+	$("#text-uid").val("") // clear the uid field
+	$("#text-pwd").val("") // clear the password field
 	view2model();  // force an update from screens  
 	$("#review_span").text( alert.getCAP() );
-	// test against rules
 	
-	//   if incomplete, show release panel (uid, pwd, release button)
-	
-	//   else show error message only
+	// TBD qualify alert against profiles / rules
 	
 } );
 
@@ -317,7 +316,7 @@ function sendAlert() {
         	var isAuthenticated = response_json.authenticated;
         	if ( ! isAuthenticated ) {
         		result_message = result_message + "FAILED: Wrong User ID or Password<br>\n";
-        		showResult( result_message);
+        		$("#response_span").html( result_message );
         		return;
         	}	
         	var isValid = response_json.valid;
