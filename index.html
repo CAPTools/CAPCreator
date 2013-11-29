@@ -2,7 +2,7 @@
 <html>
 <!-- 
 	CAPCreator -- Common Alerting Protocol 1.2 composition tool
-	version 0.9.1 - 7 October 2013
+	version 0.9.2 - 29 November 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University 
 	All rights reserved.
@@ -49,11 +49,12 @@
  			data-iconpos="right" style="whitespace:normal; width:200px" >Issue a New Alert</a>
  			
  		<div id="alert_view_div" data-role="popup" data-mini="true" data-position-to="#current_alerts_div" class="ui-content">
+ 		<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
  			<span id="alert_view_span"></span>
  			<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" >
-	 			<input type="button" id="update_button" name="update_button" data-mini="true" value="Update This" 
+	 			<input type="button" id="update_button" name="update_button" data-mini="true" value="Update This Alert" 
 	 				style="whitespace:normal; width:140px"/>
-	 			<input type="button" id="cancel_button" name="cancel_button" data-mini="true" value="Cancel This" 
+	 			<input type="button" id="cancel_button" name="cancel_button" data-mini="true" value="Cancel This Alert" 
 	 				style="whitespace:normal; width:140px"/>
  			</fieldset>
  		</div>
@@ -62,6 +63,7 @@
  		</br>
  		<a href="#popup-about" data-rel="popup" data-role="button" data-mini="true" class="ui-mini" style="width:200px; font-style:italic; font-weight:normal">About CAPCreator&trade;</a>
  		<div class="about_div" id="popup-about" data-role="popup" data-mini="true">
+ 		<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
  			<h3>About CAPCreator</h3>
 	    	<span id="alert-info" class="info_block">
 		    	<b>CAPCreator&trade;</b> is a simple tool for authoring alerts and other messages using the 
