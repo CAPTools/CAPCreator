@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9.2 - 29 November 2013
+	version 0.9.2 - 2 December 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -51,12 +51,12 @@ $(document).on('pageinit', "#alert", function() {
 
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', "#info", function() { 
-	parameter_set = new CapTupleSetWidget( "Parameter", area, $('#parameter_div') );
+	parameter_set = new CapTupleSetWidget( "Parameter (optional)", area, $('#parameter_div') );
 	$(".tm").html("CAPCreator&trade; " + versionID);
-	$("#textarea-note").val("Created using CAPCreator" + versionID);
+	$("#textarea-note").val("Using CAPCreator" + versionID);
 } );
 $(document).on('pageinit', "#area", function() { 
-	geocode_set = new CapTupleSetWidget( "Geocode", area, $('#geocode_div') );
+	geocode_set = new CapTupleSetWidget( "Geocode (optional)", area, $('#geocode_div') );
 } );
 
 
