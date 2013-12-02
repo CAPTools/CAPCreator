@@ -2,7 +2,7 @@
 <html>
 <!-- 
 	CAPCreator -- Common Alerting Protocol 1.2 composition tool
-	version 0.9.2 - 29 November 2013
+	version 0.9.2 - 2 December 2013
 	
 	Copyright (c) 2013, Carnegie Mellon University 
 	All rights reserved.
@@ -271,31 +271,33 @@
     
      
     	<div >
-			<label class="field_label">Name of Issuing Authority:</label>
+			<label class="field_label">Who is Issuing This Alert:</label>
 			<input type="text" name="text-senderName" id="text-senderName" data-mini="true" placeholder="" value="" onchange="view2model()">
 		</div>
 		
 		<div class="form_row_div">
-			<label class="field_label">Short-Message Headline (REQUIRED):&nbsp;&nbsp;<span id="headline_length">(<span id="headline_counter">140</span> characters left)</span></label>
+			<label class="field_label">Short-Text Headline (REQUIRED):&nbsp;&nbsp;<span id="headline_length">(<span id="headline_counter">140</span> characters left)</span></label>
 			<input type="text" name="text-headline" id="text-headline" data-mini="true" placeholder="Required - 140 characters maximum" value="" onchange="view2model()">
 		</div>
 		
 		<div class="form_row_div">
-			<label class="field_label" >Description of Event or Hazard:</label>
+			<label class="field_label" >Describe the Event or Hazard:</label>
  			<textarea name="textarea-description" id="textarea-description" data-mini="true" placeholder="" onchange="view2model()"></textarea>
  		</div>
     
     	<div class="form_row_div">
-    		<label class="field_label" >Instructions for Protective Action:</label>
+    		<label class="field_label" >What Should Affected People Do:</label>
  			<textarea name="textarea-instruction" id="textarea-instruction" data-mini="true" placeholder="" onchange="view2model()"></textarea>
  		</div>
  		
  		<div class="form_row_div">
- 			<label class="field_label" >For More Information Contact:</label>
+ 			<label class="field_label" >Who is Media Contact:</label>
  			<input type="text" name="text-contact" id="text-contact" data-mini="true" placeholder="Include telephone and/or email" value="" onchange="view2model()">
  		</div>
  		
  		<div id="parameter_div" class="form_row_div"></div>
+ 		
+ 		<!-- 
  		
  		<div class="form_row_div">
 			<label class="field_label">Issuing Officer/Office Identifier (optional):</label>
@@ -306,6 +308,8 @@
 			<label class="field_label">Technical Note (optional):</label>
 			<textarea cols="40" rows="6" name="textarea-note" id="textarea-note" data-mini="true" onchange="view2model()"></textarea>
 		</div>	
+		
+		 -->
 		
 		<br>
  		
@@ -342,7 +346,7 @@
 			<option value="None">Select Area Template (Optional)</option>
 		</select>
            
-		<label class="field_label">Description of Alert Area (REQUIRED):</label>
+		<label class="field_label">Describe the Alert Area (REQUIRED):</label>
 		<textarea name="textarea-areaDesc" id="textarea-areaDesc" data-mini="true" placeholder="" onchange="view2model()"></textarea>
 			
 		<div id="map_panel">
