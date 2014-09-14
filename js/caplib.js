@@ -1,6 +1,6 @@
 /*
 	caplib.js -- Common Alerting Protocol 1.2 helper library
-	version 1.1.1 - 20 August 2013
+	version 1.1.2 - 12 June 2014
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.

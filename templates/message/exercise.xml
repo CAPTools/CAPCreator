@@ -1,0 +1,30 @@
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>pending</identifier>
+  <sender>unverified</sender>
+  <sent>2014-02-25T23:07:03+00:00</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Restricted</scope>
+  <info>
+    <language>en-us</language>
+    <category>Env</category>
+    <event>This is a test of myPAWS</event>
+    <responseType>Assess</responseType>
+    <urgency>Immediate</urgency>
+    <severity>Extreme</severity>
+    <certainty>Observed</certainty>
+    <expires>2014-02-26T02:07:03+00:00</expires>
+    <senderName>CMU</senderName>
+    <headline>This is a test of CAPCreator</headline>
+    <description>Test Message</description>
+    <instruction>Log and ignore</instruction>
+    <contact>CMU</contact>
+    <area>
+      <areaDesc>CMU B19</areaDesc>
+      <circle>37.41316,-122.05868 0.24472</circle>
+    </area>
+  </info>
+</alert>
+
+
+

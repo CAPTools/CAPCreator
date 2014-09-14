@@ -1,6 +1,6 @@
 /*
 	config.js -- configuration variables for CAPCreator
-	version 0.9.2 - 29 November 2013
+	version 0.9.3 - 12 June 2014
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -18,6 +18,7 @@ var CAPCreatorConfiguration = function() {
 	this.CAPCollectorSubmitURL = "http://localhost/cgi-bin/CAPCollector/post_cap.py";
 	
 	this.CAPCollectorBaseURL = "http://localhost/cap/data";
+	
 	
 }
 

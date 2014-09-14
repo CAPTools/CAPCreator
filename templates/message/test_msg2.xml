@@ -5,14 +5,14 @@
   <note>Example of a message template</note>
   <info>
     <language>en-us</language>
-    <category>Fire</category>
-    <event>FRW</event>
-    <responseType>Shelter</responseType>
+    <category>Geo</category>
+    <event>AVW</event>
+    <responseType>Evacuate</responseType>
     <urgency>Expected</urgency>
     <severity>Severe</severity>
     <certainty>Likely</certainty>
-    <description>Fire Hazard</description>
-    <instruction>Take Shelter</instruction>
+    <description>Geophysical Hazard</description>
+    <instruction>Evacuate Immediately</instruction>
    </info>
 </alert>
 

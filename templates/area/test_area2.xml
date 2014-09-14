@@ -19,9 +19,8 @@
     <description>This is the description</description>
     <instruction>This is the instruction</instruction>
     <area>
-      <areaDesc>This is another very special area</areaDesc>
-      <polygon>13.63724,100.36765 13.82267,100.44044 13.70796,100.55167 13.60654,100.46790 13.63724,100.36765</polygon>
-      <circle>13.85867,100.14381 14.29924</circle>
+	<areaDesc>Test Area 2</areaDesc>
+	<circle>37.37878,-122.08917 0.08809</circle>
     </area>
   </info>
 </alert>

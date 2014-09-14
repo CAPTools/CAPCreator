@@ -1,0 +1,18 @@
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <status>Actual</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>Message template 3</note>
+  <info>
+    <language>en-us</language>
+    <category>Geo</category>
+    <event>EQW</event>
+    <responseType>Execute</responseType>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
+    <certainty>Likely</certainty>
+    <description>Geophysical Hazard</description>
+    <instruction>Execute Pre-planned Action</instruction>
+   </info>
+</alert>
+

@@ -1,6 +1,6 @@
 /*
 	CAPCreator.js -- methods and handlers for CAPCreator
-	version 0.9.2 - 2 December 2013
+	version 0.9.3 - 12 June 2014
 	
 	Copyright (c) 2013, Carnegie Mellon University
 	All rights reserved.
@@ -27,7 +27,7 @@
 		 
 */
 
-var versionID = "0.9.2"
+var versionID = "0.9.3"
 var submitUrl = config.CAPCollectorSubmitURL;
 var atomUrl = config.CAPCollectorBaseURL + "/index.atom";
 var max_headline_length = 140;
@@ -46,6 +46,8 @@ var message_templates;
 // On initialization pick up default language
 $(document).on('pageinit', "#alert", function() { 
 	info.lang = $("#select-language").val();	
+	$("#hidden-references").prop("readonly", true);
+	$("#text-expires").prop("readonly", true);
 } );
 
 
@@ -102,7 +104,7 @@ $(document).on('pageshow', "#current", function() {
 				$this = $(this);
 				var sender = $this.find("name").text();
 				var title = $this.find("title").text();
-				var updated = moment( $this.find("updated").text() ).format("YYYY-MM-DD <b>HH:mm</b> (Z)");
+				var updated = moment.tz( $this.find("updated").text(), "America/Los_Angeles").format("YYYY-MM-DD <b>HH:mm</b> (Z)");
 				var link = $this.find("link").attr("href");
 				var urgency = $this.find("urgency").text();
 				var severity = $this.find("severity").text();
@@ -183,7 +185,6 @@ function viewAlert( link ) {
 	} );
 }
 
-
 // load an area template
 function loadAreaTemplate() {
 	var link = $("#select-area-template").find(":selected").val();
@@ -229,6 +230,9 @@ function loadMessageTemplate() {
 			$("#select-status").val( alert.status ).selectmenu('refresh');
 			$("#select-msgType").val( alert.msgType ).selectmenu('refresh');
 			$("#select-scope").val( alert.scope ).selectmenu('refresh');
+			if(info.event=="CAE")
+			{$("#select-emrgncycode").val( info.event ).selectmenu('refresh');}
+			else {$("#select-eventcode").val( info.event ).selectmenu('refresh');}
 			$("#select-categories").val( info.categories[0] ).selectmenu('refresh');  // only the first value is imported
 			$("#select-responseTypes").val( info.responseTypes[0] ).selectmenu('refresh'); // only the first value is imported
 			$("#select-urgency").val( info.urgency ).selectmenu('refresh');
@@ -264,22 +268,49 @@ function view2model() {
 	}
 	alert.status = $("#select-status").val();
 	alert.msgType = $("#select-msgType").val();
+	if((alert.msgType == "Update") || (alert.msgType == "Cancel"))
+	{
+		$("#hidden-references").prop("readonly", false);
+		//alert.references = escape_text( $("#hidden-references").val() );
+	}
+	else
+	{
+		$("#hidden-references").prop("readonly", true);
+	}
+
 	alert.scope = $("#select-scope").val();
 	alert.references = $("#hidden-references").val();
 	alert.source = escape_text( $("#text-source").val() );	
 	alert.note = escape_text( $("#textarea-note").val() ); 
+	if ( $("#select-eventcode").val()!= "None" )
+	info.event = escape_text( $("#select-eventcode").val() );
+	else if ( $("#select-emrgncycode").val()!= "None" )
+	info.event = escape_text( $("#select-emrgncycode").val() );
+	else if ( $("#select-instrcode").val()!= "None" )
+	info.event = escape_text( $("#select-instrcode").val() );
+	else info.event = escape_text( "" );
+	//info.event = escape_text( $("#text-headline").val() ); // note that this is forced to be same as headline
 	info.categories = [];
 	info.addCategory( $("#select-categories").val() );
-	info.event = escape_text( $("#text-headline").val() ); // note that this is forced to be same as headline
 	info.responseTypes = [];
 	info.addResponseType( $("#select-responseTypes").val() );
 	info.urgency = $("#select-urgency").val();
 	info.severity = $("#select-severity").val();
 	info.certainty = $("#select-certainty").val();
 	var expires_in_minutes = $("#select-expires-min").val();
+		if (expires_in_minutes == "More")
+		{
+			$("#text-expires").prop("readonly", false);
+			expires_in_minutes = $("#text-expires").val();
+		}
+	else
+		{
+			$("#text-expires").prop("readonly", true);
+		}		
 	if (! expires_in_minutes) { expires_in_minutes = 60; }
 	var expires_in_millis = now.getTime() + (expires_in_minutes * 60000);
-	var expires_date = new Date( expires_in_millis );
+	var localoffset = 25200000;
+	var expires_date = new Date( expires_in_millis - localoffset );
 	var expires_string = expires_date.toISOString().split(".")[0];
 	if (timezone == "Z") { 
 		info.expires = expires_string + "+00:00";

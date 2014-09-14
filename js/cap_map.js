@@ -45,7 +45,15 @@ if ( ! map ) {   // only initialize the map once!
     	projection: Mercator,
     	displayProjection: Geographic,
     	autoUpdateSize: true,
+    	controls: [
+			new OpenLayers.Control.Navigation({zoomWheelEnabled: false}),
+			new OpenLayers.Control.PanPanel(),
+			new OpenLayers.Control.ZoomPanel(),
+			new OpenLayers.Control.ArgParser(),
+       		new OpenLayers.Control.Attribution()
+        ]
     	});
+    
     
  	// create reference layers
     var gphyLayer = new OpenLayers.Layer.Google(
@@ -92,7 +100,8 @@ if ( ! map ) {   // only initialize the map once!
     map.addControl( new OpenLayers.Control.LayerSwitcher() );
 
     // default initial view (for now)
-	setView(13.812, 100.54, 10);
+	//setView(13.812, 100.54, 10);
+    setView(37.422, -122.084, 12);
 	
 }
 	

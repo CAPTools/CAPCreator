@@ -1,0 +1,18 @@
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <status>Actual</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>Message template 3</note>
+  <info>
+    <language>en-us</language>
+    <category>Safety</category>
+    <event>CDW</event>
+    <responseType>Prepare</responseType>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
+    <certainty>Observed</certainty>
+    <description>Public Safety Hazard</description>
+    <instruction>Make Preparations for Evacuation</instruction>
+   </info>
+</alert>
+

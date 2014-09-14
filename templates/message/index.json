@@ -1,6 +1,10 @@
 { 
 "templates" : [ 
-	{ "label":"First Test Message", "link":"templates/message/test_msg1.xml" },
-	{ "label":"Second Test Message", "link":"templates/message/test_msg1.xml" }
+	{ "label":"Test Message - Fire", "link":"templates/message/test_msg1.xml" },
+	{ "label":"Exercise", "link":"templates/message/exercise.xml" },
+	{ "label":"Test Message - Avalanche", "link":"templates/message/test_msg2.xml" },
+	{ "label":"Test Message - Civil Danger", "link":"templates/message/test_msg3.xml" },
+	{ "label":"Test Message - Earthquake", "link":"templates/message/test_msg4.xml" },
+	{ "label":"Test Message - CAE", "link":"templates/message/test_msg5.xml" }
 ] 
 }

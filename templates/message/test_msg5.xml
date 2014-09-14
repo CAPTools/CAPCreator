@@ -1,0 +1,18 @@
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <status>Actual</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>Message template 3</note>
+  <info>
+    <language>en-us</language>
+    <category>Rescue</category>
+    <event>CAE</event>
+    <responseType>Evacuate</responseType>
+    <urgency>Expected</urgency>
+    <severity>Severe</severity>
+    <certainty>Possible</certainty>
+    <description>Rescue Type Hazard</description>
+    <instruction>Evacuate the Area</instruction>
+   </info>
+</alert>
+
