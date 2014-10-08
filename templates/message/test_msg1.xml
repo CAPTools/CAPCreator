@@ -1,18 +1,18 @@
 <alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
   <status>Actual</status>
-  <msgType>Alert</msgType>
+  <msgType>Update</msgType>
   <scope>Public</scope>
   <note>Example of a message template</note>
   <info>
     <language>en-us</language>
-    <category>Fire</category>
-    <event>FRW</event>
-    <responseType>Shelter</responseType>
+    <category>Env</category>
+    <event/>
+    <responseType>AllClear</responseType>
     <urgency>Expected</urgency>
     <severity>Severe</severity>
-    <certainty>Likely</certainty>
-    <description>Fire Hazard</description>
-    <instruction>Take Shelter</instruction>
+    <certainty>Possible</certainty>
+    <description>This is a description</description>
+    <instruction>This is an instruction</instruction>
    </info>
 </alert>
 
