@@ -72,17 +72,14 @@ var area_templates;
 var message_templates;
 
 
-// On initialization pick up default language
-$(document).on('pageinit', "#alert", function() {
-  info.lang = $("#select-language").val();
-});
-
-
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', "#info", function() {
   parameter_set = new CapTupleSetWidget("Parameter (optional)", area, $('#parameter_div'));
   $(".tm").html("CAPCreator&trade; " + versionID);
   $("#textarea-note").val("Using CAPCreator" + versionID);
+  // On initialization pick up default language.
+  $("#select-language").val($("#ui-language").val()).selectmenu('refresh');
+  info.language = $("#ui-language").val();
 });
 $(document).on('pageinit', "#area", function() {
   geocode_set = new CapTupleSetWidget("Geocode (optional)", area, $('#geocode_div'));
@@ -261,6 +258,7 @@ function loadMessageTemplate() {
       $("#select-urgency").val(info.urgency).selectmenu('refresh');
       $("#select-severity").val(info.severity).selectmenu('refresh');
       $("#select-certainty").val(info.certainty).selectmenu('refresh');
+      $("#select-language").val(info.language).selectmenu('refresh');
       $("#text-headline").text(info.headline);
       $("#textarea-description").text(info.description);
       $("#textarea-instruction").text(info.instruction);
@@ -327,6 +325,7 @@ function view2model() {
   } else {
     info.expires = expires_string;
   }
+  info.language = $("#select-language").val();
   info.senderName = escape_text($("#text-senderName").val());
   info.headline = escape_text($("#text-headline").val());
   info.description = escape_text($("#textarea-description").val());
@@ -405,6 +404,7 @@ function alert2view(alert) {
   $("#select-severity").val(info.severity).selectmenu('refresh');
   $("#select-certainty").val(info.certainty).selectmenu('refresh');
   // expiration is not imported
+  $("#select-language").text(info.language);
   $("#text-senderName").text(info.senderName);
   $("#text-headline").text(info.headline);
   $("#textarea-description").text(info.description);
