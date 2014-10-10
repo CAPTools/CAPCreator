@@ -1,0 +1,100 @@
+body {
+  font-family: arial, sans-serif;
+  padding: 16px;
+  margin: 0px;
+  font-size: 100%;
+  line-height: 120%;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  border-bottom: 1px solid;
+  padding-bottom: 0.01em;
+}
+
+h2 {
+  padding:16px 16px 0 16px;
+  margin:0px;
+  font-weight: 400;
+  font-size: x-large;
+}
+
+.content {
+  padding-right: 16px;
+  padding-bottom: 16px;
+}
+
+.metadata {
+  color: #777;
+  font-size:small;
+  margin-top:6px;
+}
+
+.subtitle {
+  padding-left: 16px;
+  padding-top: 0px;
+}
+
+.normal {
+  font-size:small;
+  margin-top:6px;
+  padding-left:16px;
+}
+
+.alert-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.alert-list li {
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.alert-list li:first-child {
+  margin-top: 16px;
+}
+
+.alert-list li:last-child {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.alert-list .normal {
+  padding-left: 0;
+}
+
+.alert-title {
+  font-size:large;
+  margin-bottom:0px;
+}
+
+.locations {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.instructions {
+  margin: 16px 0 8px;
+  padding-top: 16px;
+  border-top:1px solid #e0e0e0;
+}
+
+.subsection {
+  font-weight: bold;
+}
+
+.description {
+  padding-top: 16px;
+    border-top:1px solid #e0e0e0;
+    margin-top:16px;
+}
+
+.back {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 6px;
+}

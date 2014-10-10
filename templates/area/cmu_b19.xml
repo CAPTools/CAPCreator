@@ -15,16 +15,13 @@
     <certainty>Observed</certainty>
     <expires>2014-02-26T02:07:03+00:00</expires>
     <senderName>Martin/DMI</senderName>
-    <headline>This is a test of CAPCreator</headline>
-    <description>Test Message</description>
+    <headline>This is a test of myPAWS</headline>
+    <description>Just fooling around</description>
     <instruction>Log and ignore</instruction>
-    <contact>CMU</contact>
+    <contact>Hakan Erdogmus -:)</contact>
     <area>
       <areaDesc>CMU B19</areaDesc>
       <circle>37.41316,-122.05868 0.24472</circle>
     </area>
   </info>
 </alert>
-
-
-

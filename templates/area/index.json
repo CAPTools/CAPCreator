@@ -1,6 +1,7 @@
-{ 
-"templates" : [ 
-	{ "label":"First Test Area", "link":"templates/area/test_area1.xml" },
-	{ "label":"Second Test Area", "link":"templates/area/test_area2.xml" }
-] 
+{
+"templates" : [
+  { "label": "Test Area 1", "link":"client/templates/area/test_area1.xml" },
+  { "label": "Test Area 2", "link":"client/templates/area/test_area2.xml" },
+  { "label": "CMU B19", "link":"client/templates/area/cmu_b19.xml" }
+]
 }

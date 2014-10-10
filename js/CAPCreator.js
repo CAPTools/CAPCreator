@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * CAPCreator.js -- methods and handlers for CAPCreator
- * version 0.9.2 - 2 December 2013
+ * version 0.9.3 - 12 June 2014
  *
  * Copyright (c) 2013, Carnegie Mellon University
  * All rights reserved.
@@ -80,6 +80,8 @@ $(document).on('pageinit', "#info", function() {
   // On initialization pick up default language.
   $("#select-language").val($("#ui-language").val()).selectmenu('refresh');
   info.language = $("#ui-language").val();
+  $("#hidden-references").prop("readonly", true);
+  $("#text-expires").prop("readonly", true);
 });
 $(document).on('pageinit', "#area", function() {
   geocode_set = new CapTupleSetWidget("Geocode (optional)", area, $('#geocode_div'));
@@ -253,6 +255,13 @@ function loadMessageTemplate() {
       $("#select-status").val(alert.status).selectmenu('refresh');
       $("#select-msgType").val(alert.msgType).selectmenu('refresh');
       $("#select-scope").val(alert.scope).selectmenu('refresh');
+
+      if(info.event=="CAE") {
+        $("#select-emrgncycode").val(info.event).selectmenu('refresh');
+      } else {
+        $("#select-eventcode").val(info.event).selectmenu('refresh');
+      };
+
       $("#select-categories").val(info.categories[0]).selectmenu('refresh');  // only the first value is imported
       $("#select-responseTypes").val(info.responseTypes[0]).selectmenu('refresh'); // only the first value is imported
       $("#select-urgency").val(info.urgency).selectmenu('refresh');
@@ -303,19 +312,38 @@ function view2model() {
   }
   alert.status = $("#select-status").val();
   alert.msgType = $("#select-msgType").val();
+  if((alert.msgType == "Update") || (alert.msgType == "Cancel")) {
+    $("#hidden-references").prop("readonly", false);
+  } else {
+    $("#hidden-references").prop("readonly", true);
+  }
   alert.scope = $("#select-scope").val();
   alert.references = $("#hidden-references").val();
   alert.source = escape_text($("#text-source").val());
   alert.note = escape_text($("#textarea-note").val());
+  if ( $("#select-eventcode").val()!= "None" ) {
+    info.event = escape_text( $("#select-eventcode").val() );
+  } else if ( $("#select-emrgncycode").val()!= "None" ) {
+    info.event = escape_text( $("#select-emrgncycode").val() );
+  } else if ( $("#select-instrcode").val()!= "None" ) {
+    info.event = escape_text( $("#select-instrcode").val() );
+  } else {
+    info.event = escape_text( "" );
+  }
   info.categories = [];
   info.addCategory($("#select-categories").val());
-  info.event = escape_text($("#text-headline").val()); // note that this is forced to be same as headline
   info.responseTypes = [];
   info.addResponseType($("#select-responseTypes").val());
   info.urgency = $("#select-urgency").val();
   info.severity = $("#select-severity").val();
   info.certainty = $("#select-certainty").val();
   var expires_in_minutes = $("#select-expires-min").val();
+  if (expires_in_minutes == "More") {
+    $("#text-expires").prop("readonly", false);
+    expires_in_minutes = $("#text-expires").val();
+  } else {
+    $("#text-expires").prop("readonly", true);
+  }
   if (! expires_in_minutes) { expires_in_minutes = 60; }
   var expires_in_millis = now.getTime() + (expires_in_minutes * 60000);
   var expires_date = new Date(expires_in_millis);

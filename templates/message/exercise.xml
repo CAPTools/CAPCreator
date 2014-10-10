@@ -14,17 +14,14 @@
     <severity>Extreme</severity>
     <certainty>Observed</certainty>
     <expires>2014-02-26T02:07:03+00:00</expires>
-    <senderName>CMU</senderName>
-    <headline>This is a test of CAPCreator</headline>
-    <description>Test Message</description>
+    <senderName>Martin/DMI</senderName>
+    <headline>This is a test of myPAWS</headline>
+    <description>Just fooling around</description>
     <instruction>Log and ignore</instruction>
-    <contact>CMU</contact>
+    <contact>Haka Erdogmus -:)</contact>
     <area>
       <areaDesc>CMU B19</areaDesc>
       <circle>37.41316,-122.05868 0.24472</circle>
     </area>
   </info>
 </alert>
-
-
-

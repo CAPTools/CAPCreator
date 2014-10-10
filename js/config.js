@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * config.js -- configuration variables for CAPCreator
- * version 0.9.2 - 29 November 2013
+ * version 0.9.3 - 12 June 2014
  *
  * Copyright (c) 2013, Carnegie Mellon University
  * All rights reserved.
@@ -46,7 +46,7 @@ var CAPCreatorConfiguration = function() {
   this.OpenLayersImgPath = "client/img/";
   this.atomUrl = "/feed.xml";
   this.maxHeadlineLength = 140;
-  this.versionID = "0.9.2";
+  this.versionID = "0.9.3";
 }
 
 // Now create a global config object for the whole.
