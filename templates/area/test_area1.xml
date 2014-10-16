@@ -19,8 +19,12 @@
     <description>This is the description</description>
     <instruction>This is the instruction</instruction>
     <area>
-  <areaDesc>LinkedIn Office</areaDesc>
-  <circle>37.37878,-122.08917 0.08809</circle>
+      <areaDesc>LinkedIn Office</areaDesc>
+      <circle>37.37878,-122.08917 0.08809</circle>
+      <geocode>
+        <valueName>geo_code1</valueName>
+        <value>geo_code_value1</value>
+      </geocode>
     </area>
   </info>
 </alert>

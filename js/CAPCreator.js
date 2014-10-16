@@ -81,8 +81,6 @@ $(document).on('pageinit', '#info', function() {
   // On initialization pick up default language.
   $('#select-language').val($('#ui-language').val()).selectmenu('refresh');
   info.language = $('#ui-language').val();
-  $('#hidden-references').prop('readonly', true);
-  $('#text-expires').prop('readonly', true);
 });
 $(document).on('pageinit', '#area', function() {
   geocode_set = new CapTupleSetWidget(
@@ -92,6 +90,7 @@ $(document).on('pageinit', '#area', function() {
 
 // When initializing new page, load list of available message templates
 $(document).on('pageinit', '#alert', function() {
+  $('#custom-expiration-time-block').hide();
   $.getJSON('client/templates/message/index.json')
     .done(function(json) {
       $.each(json.templates, function() {
@@ -203,14 +202,23 @@ function viewAlert(link) {
       alert.references = alert.sender + ',' + alert.identifier + ',' +
                          alert.sent;
       $('#cancel_button').click(function(e) {
+        $('#select-message-template').val('None').selectmenu('refresh');
+        $('#select-area-template').val('None').selectmenu('refresh');
         alert.msgType = 'Cancel';
         alert2view(alert);
         $.mobile.navigate('#alert');
       });
       $('#update_button').click(function(e) {
+        $('#select-message-template').val('None').selectmenu('refresh');
+        $('#select-area-template').val('None').selectmenu('refresh');
         alert.msgType = 'Update';
         alert2view(alert);
         $.mobile.navigate('#alert');
+      });
+      $('#view_button').click(function(e) {
+        var newTab = window.open('/feed/' + alert.identifier + '.xml',
+                                 '_blank');
+        newTab.focus();
       });
     }
   });
@@ -259,15 +267,12 @@ function loadMessageTemplate() {
       var info = alert.infos[0];
       // load message fields into the current view
       var info = alert.infos[0];
-      $('#select-status').val(alert.status).selectmenu('refresh');
+      if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
+        $('#select-status').val(alert.status).selectmenu('refresh');
+      }
       $('#select-msgType').val(alert.msgType).selectmenu('refresh');
       $('#select-scope').val(alert.scope).selectmenu('refresh');
 
-      if (info.event == 'CAE') {
-        $('#select-emrgncycode').val(info.event).selectmenu('refresh');
-      } else {
-        $('#select-eventcode').val(info.event).selectmenu('refresh');
-      }
       // only the first value is imported
       $('#select-categories').val(info.categories[0]).selectmenu('refresh');
       // only the first value is imported
@@ -277,14 +282,23 @@ function loadMessageTemplate() {
       $('#select-severity').val(info.severity).selectmenu('refresh');
       $('#select-certainty').val(info.certainty).selectmenu('refresh');
       $('#select-language').val(info.language).selectmenu('refresh');
-      $('#text-headline').text(info.headline);
+
+      if (!$('#select-language').val()) {
+        $('#select-language').val(
+            $('#ui-language').val()).selectmenu('refresh');
+      }
+
+      $('#text-senderName').val(info.senderName);
+      $('#text-headline').val(info.headline);
       $('#textarea-description').text(info.description);
       $('#textarea-instruction').text(info.instruction);
-      $('#textarea-note').val(alert.note);
+      $('#text-web').val(info.web);
+      $('#text-contact').val(info.contact);
+      $('#text-source').val(info.source);
+      $('#textarea-note').text(alert.note);
       // clear and reload parameter set in widget
       parameter_set.removeAll();
-
-      $(area.parameters).each(function() {
+      $(info.parameters).each(function() {
         parameter_set.addAndPopulate(this.valueName, this.value);
       });
     }
@@ -330,15 +344,7 @@ function view2model() {
   alert.references = $('#hidden-references').val();
   alert.source = escape_text($('#text-source').val());
   alert.note = escape_text($('#textarea-note').val());
-  if ($('#select-eventcode').val() != 'None') {
-    info.event = escape_text($('#select-eventcode').val());
-  } else if ($('#select-emrgncycode').val() != 'None') {
-    info.event = escape_text($('#select-emrgncycode').val());
-  } else if ($('#select-instrcode').val() != 'None') {
-    info.event = escape_text($('#select-instrcode').val());
-  } else {
-    info.event = escape_text('');
-  }
+  info.event = escape_text($('#text-headline').val());
   info.categories = [];
   info.addCategory($('#select-categories').val());
   info.responseTypes = [];
@@ -347,13 +353,15 @@ function view2model() {
   info.severity = $('#select-severity').val();
   info.certainty = $('#select-certainty').val();
   var expires_in_minutes = $('#select-expires-min').val();
-  if (expires_in_minutes == 'More') {
-    $('#text-expires').prop('readonly', false);
+  if (expires_in_minutes == 'Other') {
+    $('#custom-expiration-time-block').show();
     expires_in_minutes = $('#text-expires').val();
   } else {
-    $('#text-expires').prop('readonly', true);
+    $('#custom-expiration-time-block').hide();
   }
-  if (! expires_in_minutes) { expires_in_minutes = 60; }
+  if (!expires_in_minutes) {
+    expires_in_minutes = 60;
+  }
   var expires_in_millis = now.getTime() + (expires_in_minutes * 60000);
   var expires_date = new Date(expires_in_millis);
   var expires_string = expires_date.toISOString().split('.')[0];
@@ -368,11 +376,14 @@ function view2model() {
   info.description = escape_text($('#textarea-description').val());
   info.instruction = escape_text($('#textarea-instruction').val());
   info.contact = escape_text($('#text-contact').val());
+  info.web = escape_text($('#text-web').val() || 'pending');
   if (parameter_set) { info.parameters = parameter_set.getAll(); }
   area.areaDesc = escape_text($('#textarea-areaDesc').val());
   area.polygons = getPolygons(); // function getPolygons() from cap_map.js
   area.circles = getCircles();  // function getCircles() from cap_map.js
-  if (geocode_set) { area.geocodes = geocode_set.getAll(); }
+  if (geocode_set) {
+    area.geocodes = geocode_set.getAll();
+  }
 }
 
 
@@ -448,18 +459,18 @@ function alert2view(alert) {
   $('#select-severity').val(info.severity).selectmenu('refresh');
   $('#select-certainty').val(info.certainty).selectmenu('refresh');
   // expiration is not imported
-  $('#select-language').text(info.language);
-  $('#text-senderName').text(info.senderName);
-  $('#text-headline').text(info.headline);
+  $('#select-language').val(info.language);
+  $('#text-senderName').val(info.senderName);
+  $('#text-headline').val(info.headline);
   $('#textarea-description').text(info.description);
   $('#textarea-instruction').text(info.instruction);
-  $('#text-contact').text(info.contact);
-  $('#text-source').text(info.source);
+  $('#text-contact').val(info.contact);
+  $('#text-source').val(info.source);
   $('#textarea-note').text(area.note);
 
   // clear and reload parameter set in widget
   parameter_set.removeAll();
-  $(area.parameters).each(function() {
+  $(info.parameters).each(function() {
     parameter_set.addAndPopulate(this.valueName, this.value);
   });
 
