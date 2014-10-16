@@ -37,7 +37,7 @@
  * See LICENSE.txt for license terms (Modified BSD)
  *
  * DEPENDENCIES AND REQUIREMENTS:
- * OpenLayers, jQuery, jQuery Mobile and Moment.js, as well as local libraries
+ * OpenLayers, jQuery and jQuery Mobile as well as local libraries
  * config.js, caplib.js cap_map.js and widgets.js must be loaded in the HTML first
  *
  *
@@ -95,8 +95,7 @@ $(document).on('pageshow', '#current', function() {
         $this = $(this);
         var sender = $this.find('name').text();
         var title = $this.find('title').text();
-        var updated = moment($this.find('updated').text()).format(
-            'YYYY-MM-DD <b>HH:mm</b> (Z)');
+        var updated = $this.find('updated').text();
         var link = $this.find('link').attr('href');
         var urgency = $this.find('urgency').text();
         var severity = $this.find('severity').text();
@@ -233,6 +232,7 @@ function handleMessageTemplateChange(urlPrefix, adminUrl) {
 
     $('#text-senderName').val(info.senderName);
     $('#text-headline').val(info.headline);
+    $('#text-event').val(info.event);
     $('#textarea-description').text(info.description);
     $('#textarea-instruction').text(info.instruction);
     $('#text-web').val(info.web);
@@ -316,7 +316,7 @@ function view2model() {
   alert.references = $('#hidden-references').val();
   alert.source = escape_text($('#text-source').val());
   alert.note = escape_text($('#textarea-note').val());
-  info.event = escape_text($('#text-headline').val());
+  info.event = escape_text($('#text-event').val());
   info.categories = [];
   info.addCategory($('#select-categories').val());
   info.responseTypes = [];
@@ -396,8 +396,9 @@ function sendAlert(csrfToken) {
           // display the result
           $('#response_status').html(result_message);
           $('#response_uuid').html(result_uuid);
-          $('#text-uid').val(''); // clear the uid field
-          $('#text-pwd').val(''); // clear the password field
+          $('#text-uid').val('');  // Clear the uid field.
+          $('#text-pwd').val('');  // Clear the password field.
+          parameter_set.removeAll();  // Clear parameter set.
           // and after delay, loop back to the Current Alerts screen
           setTimeout(function() { $.mobile.navigate('#current'); }, 3000);
         },
@@ -433,6 +434,7 @@ function alert2view(alert) {
   // expiration is not imported
   $('#select-language').val(info.language);
   $('#text-senderName').val(info.senderName);
+  $('#text-event').val(info.event);
   $('#text-headline').val(info.headline);
   $('#textarea-description').text(info.description);
   $('#textarea-instruction').text(info.instruction);
