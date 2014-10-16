@@ -38,16 +38,19 @@
  */
 
 
-// SET THESE FOR LOCAL CONFIGURATION
-var CAPCreatorConfiguration = function() {
+/**
+ * Set these for local configuration.
+ * @param {{centerLat: float, centerLon: float,
+            centerZoom: int}} mapDefaultViewport
+ * @constructor
+ */
+var CAPCreatorConfiguration = function(mapDefaultViewport) {
   this.CAPCollectorBaseURL = "/";
   this.CAPCollectorSubmitURL = "/post/";
   /* Relative path to the "img" subdirectory of OpenLayers install. */
   this.OpenLayersImgPath = "client/img/";
+  this.mapDefaultViewport = mapDefaultViewport;
   this.atomUrl = "/feed.xml";
   this.maxHeadlineLength = 140;
   this.versionID = "0.9.3";
 }
-
-// Now create a global config object for the whole.
-var config = new CAPCreatorConfiguration();
