@@ -40,19 +40,6 @@
  * OpenLayers, jQuery, jQuery Mobile and Moment.js, as well as local libraries
  * config.js, caplib.js cap_map.js and widgets.js must be loaded in the HTML first
  *
- * Current alerts are in web subdirectory data with an index in index.atom.
- * Templates for areas are in the web subdirectory templates/message, with a collection of label/filename pairs in index.json.
- * Templates for areas are in the web subdirectory templates/area, with a collection of label/filename pairs in index.json.
- *
- * Example of an index.json file:
- *    -----------------
- *    {
- *    "templates" : [
- *      { "label":"First Test Area", "link":"templates/area/test_area1.xml" },
- *      { "label":"Second Test Area", "link":"templates/area/test_area2.xml" }
- *    ]
- *    }
- *    -----------------
  *
  */
 
@@ -88,32 +75,9 @@ $(document).on('pageinit', '#area', function() {
 });
 
 
-// When initializing new page, load list of available message templates
 $(document).on('pageinit', '#alert', function() {
+  // Hide custom expiration time input on page init.
   $('#custom-expiration-time-block').hide();
-  $.getJSON('client/templates/message/index.json')
-    .done(function(json) {
-      $.each(json.templates, function() {
-        $('#select-message-template').append(new Option(this.label, this.link));
-      });
-    })
-    .fail(function(jqxhr, textStatus, error) {
-      console.log("Can't load message templates: " + error);
-  });
-});
-
-
-// When initializing area page, load list of available area templates
-$(document).on('pageinit', '#area', function() {
-  $.getJSON('client/templates/area/index.json')
-    .done(function(json) {
-      $.each(json.templates, function() {
-        $('#select-area-template').append(new Option(this.label, this.link));
-      });
-    })
-    .fail(function(jqxhr, textStatus, error) {
-      console.log("Can't load area templates: " + error);
-  });
 });
 
 
@@ -160,11 +124,6 @@ $(document).on('pageshow', '#release', function() {
   $('#review_span').text(alert.getCAP());
 
   // TBD qualify alert against profiles / rules
-
-});
-
-// Any time we go to the Map page, resize each of the Geocodes widgets
-$(document).on('pageshow', '#area', function() {
 
 });
 
@@ -225,86 +184,99 @@ function viewAlert(link) {
 }
 
 
-// load an area template
-function loadAreaTemplate() {
-  var link = $('#select-area-template').find(':selected').val();
-  $.ajax({
-    url: link,
-    dataType: 'xml',
-    cache: false,
-    success: function(data, status, jqXHR) {
-      var xml = jqXHR.responseText;
-      var alert = parseCAP2Alert(xml);
-      var info = alert.infos[0];
-      var area = info.areas[0];
-      $('#textarea-areaDesc').text(area.areaDesc);
-      geocode_set.removeAll();
-      $(area.geocodes).each(function() {
-        geocode_set.addAndPopulate(this.valueName, this.value);
-      });
-      drawingLayer.destroyFeatures();
-      $(area.polygons).each(function() {
-        addCapPolygonToMap(String(this));
-      });
-      $(area.circles).each(function() {
-        addCapCircleToMap(String(this));
-      });
-    }
+function handleAreaTemplateChange(urlPrefix, adminUrl) {
+  handleTemplateChange(urlPrefix, '#select-area-template',
+                       'CreateNewAreaTemplate', adminUrl, function(alert) {
+    var info = alert.infos[0];
+    var area = info.areas[0];
+    $('#textarea-areaDesc').text(area.areaDesc);
+    geocode_set.removeAll();
+    $(area.geocodes).each(function() {
+      geocode_set.addAndPopulate(this.valueName, this.value);
+    });
+    drawingLayer.destroyFeatures();
+    $(area.polygons).each(function() {
+      addCapPolygonToMap(String(this));
+    });
+    $(area.circles).each(function() {
+      addCapCircleToMap(String(this));
+    });
   });
 }
 
 
-//load a message template
-function loadMessageTemplate() {
-  var link = $('#select-message-template').find(':selected').val();
-  $.ajax({
-    url: link,
-    dataType: 'xml',
-    cache: false,
-    success: function(data, status, jqXHR) {
-      var xml = jqXHR.responseText;
-      var alert = parseCAP2Alert(xml);
-      var info = alert.infos[0];
-      // load message fields into the current view
-      var info = alert.infos[0];
-      if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
-        $('#select-status').val(alert.status).selectmenu('refresh');
-      }
-      $('#select-msgType').val(alert.msgType).selectmenu('refresh');
-      $('#select-scope').val(alert.scope).selectmenu('refresh');
-
-      // only the first value is imported
-      $('#select-categories').val(info.categories[0]).selectmenu('refresh');
-      // only the first value is imported
-      $('#select-responseTypes').val(
-          info.responseTypes[0]).selectmenu('refresh');
-      $('#select-urgency').val(info.urgency).selectmenu('refresh');
-      $('#select-severity').val(info.severity).selectmenu('refresh');
-      $('#select-certainty').val(info.certainty).selectmenu('refresh');
-      $('#select-language').val(info.language).selectmenu('refresh');
-
-      if (!$('#select-language').val()) {
-        $('#select-language').val(
-            $('#ui-language').val()).selectmenu('refresh');
-      }
-
-      $('#text-senderName').val(info.senderName);
-      $('#text-headline').val(info.headline);
-      $('#textarea-description').text(info.description);
-      $('#textarea-instruction').text(info.instruction);
-      $('#text-web').val(info.web);
-      $('#text-contact').val(info.contact);
-      $('#text-source').val(info.source);
-      $('#textarea-note').text(alert.note);
-      // clear and reload parameter set in widget
-      parameter_set.removeAll();
-      $(info.parameters).each(function() {
-        parameter_set.addAndPopulate(this.valueName, this.value);
-      });
+function handleMessageTemplateChange(urlPrefix, adminUrl) {
+  handleTemplateChange(urlPrefix, '#select-message-template',
+                       'CreateNewMessageTemplate', adminUrl, function(alert) {
+    var info = alert.infos[0];
+    // load message fields into the current view
+    if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
+      $('#select-status').val(alert.status).selectmenu('refresh');
     }
+    $('#select-msgType').val(alert.msgType).selectmenu('refresh');
+    $('#select-scope').val(alert.scope).selectmenu('refresh');
+
+    // only the first value is imported
+    $('#select-categories').val(info.categories[0]).selectmenu('refresh');
+    // only the first value is imported
+    $('#select-responseTypes').val(
+        info.responseTypes[0]).selectmenu('refresh');
+    $('#select-urgency').val(info.urgency).selectmenu('refresh');
+    $('#select-severity').val(info.severity).selectmenu('refresh');
+    $('#select-certainty').val(info.certainty).selectmenu('refresh');
+    $('#select-language').val(info.language).selectmenu('refresh');
+
+    if (!$('#select-language').val()) {
+      $('#select-language').val(
+          $('#ui-language').val()).selectmenu('refresh');
+    }
+
+    $('#text-senderName').val(info.senderName);
+    $('#text-headline').val(info.headline);
+    $('#textarea-description').text(info.description);
+    $('#textarea-instruction').text(info.instruction);
+    $('#text-web').val(info.web);
+    $('#text-contact').val(info.contact);
+    $('#text-source').val(info.source);
+    $('#textarea-note').text(alert.note);
+    // clear and reload parameter set in widget
+    parameter_set.removeAll();
+    $(info.parameters).each(function() {
+      parameter_set.addAndPopulate(this.valueName, this.value);
+    });
   });
 }
 
+function handleTemplateChange(urlPrefix, selectId,
+    createNewTemplateId, createNewTemplateUrl, onSuccess) {
+
+  function createPopupWindow(url, width, height) {
+    var left = screen.width / 2 - width / 2;
+    var top = screen.height / 2 - height / 2;
+    var dimenstions = 'height=' + height + ', width=' + width;
+    var position = 'top=' + top + ', left=' + left;
+    var params = dimenstions + ' ' + position;
+    var newTab = window.open(url, '_blank', params);
+    newTab.focus();
+  }
+
+  var templateId = $(selectId).find(':selected').val();
+  if (templateId && templateId == createNewTemplateId) {
+    var newTab = createPopupWindow(createNewTemplateUrl, 800, 400);
+  } else if (templateId && templateId != 'None') {
+    var link = urlPrefix + '?template_id=' + templateId;
+    $.ajax({
+      url: link,
+      dataType: 'xml',
+      cache: false,
+      success: function(data, status, jqXHR) {
+        var xml = jqXHR.responseText;
+        var alert = parseCAP2Alert(xml);
+        onSuccess(alert);
+      }
+    });
+  }
+}
 
 function setLanguage(language, csrfToken) {
   $.ajax('/i18n/setlang/', {

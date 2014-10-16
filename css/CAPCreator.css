@@ -185,3 +185,7 @@ input[type=button] {
 .ui-controlgroup-horizontal.ui-mini .ui-btn-inner {
   height: auto;
 }
+
+.create-new-template {
+  padding: 4px 0;
+}
