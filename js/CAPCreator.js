@@ -54,6 +54,7 @@ var area = info.addArea();
 
 var parameter_set;
 var geocode_set;
+var area_descriptions = [];
 
 var area_templates;
 var message_templates;
@@ -188,18 +189,19 @@ function handleAreaTemplateChange(urlPrefix, adminUrl) {
                        'CreateNewAreaTemplate', adminUrl, function(alert) {
     var info = alert.infos[0];
     var area = info.areas[0];
-    $('#textarea-areaDesc').text(area.areaDesc);
-    geocode_set.removeAll();
-    $(area.geocodes).each(function() {
-      geocode_set.addAndPopulate(this.valueName, this.value);
-    });
-    drawingLayer.destroyFeatures();
-    $(area.polygons).each(function() {
-      addCapPolygonToMap(String(this));
-    });
-    $(area.circles).each(function() {
-      addCapCircleToMap(String(this));
-    });
+    if ($.inArray(area.areaDesc, area_descriptions) == -1) {
+      area_descriptions.push(area.areaDesc);
+      $(area.geocodes).each(function() {
+        geocode_set.addAndPopulate(this.valueName, this.value);
+      });
+      $(area.polygons).each(function() {
+        addCapPolygonToMap(String(this));
+      });
+      $(area.circles).each(function() {
+        addCapCircleToMap(String(this));
+      });
+    }
+    $('#textarea-areaDesc').text(area_descriptions.join(', '));
   });
 }
 
@@ -399,8 +401,9 @@ function sendAlert(csrfToken) {
           $('#text-uid').val('');  // Clear the uid field.
           $('#text-pwd').val('');  // Clear the password field.
           parameter_set.removeAll();  // Clear parameter set.
+          area_descriptions = [];  // Clear area descriptions.
           // and after delay, loop back to the Current Alerts screen
-          setTimeout(function() { $.mobile.navigate('#current'); }, 3000);
+          setTimeout(function() { window.location.href = "/"; }, 3000);
         },
         error: function(data, textStatus, errorThrown) {
           result_message = result_message +

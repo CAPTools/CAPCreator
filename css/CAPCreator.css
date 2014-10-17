@@ -135,7 +135,7 @@ input[type=button] {
 #review_div {
   font-size: 0.8em;
   height: 300px;
-  background-color: White;
+  background-color: #ddd;
   overflow: auto;
 }
 
@@ -188,4 +188,18 @@ input[type=button] {
 
 .create-new-template {
   padding: 4px 0;
+}
+
+div.ui-input-text {
+  max-width: 490px;
+  padding: 0 5px;
+}
+
+#textarea-description, #textarea-instruction, #textarea-areaDesc {
+  max-width: 500px;
+  min-height: 3em;
+}
+
+.required {
+  color: red;
 }
