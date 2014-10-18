@@ -80,8 +80,6 @@
 }
 
 #map_panel {
-  width: 100%;
-  height: 400px;
   background-color: SteelBlue;
 }
 
@@ -94,9 +92,16 @@
   cursor: crosshair;
 }
 
+#map_panel, #mode_panel, #review_div {
+  margin: 0 15px;
+}
+
 #mode_panel {
-  width: 100%;
   border: 1px;
+}
+
+#geocode_div {
+  margin: 0 10px 10px 10px;
 }
 
 input[type=radio] {
@@ -135,7 +140,7 @@ input[type=button] {
 #review_div {
   font-size: 0.8em;
   height: 300px;
-  background-color: #ddd;
+  background-color: #eee;
   overflow: auto;
 }
 
@@ -179,7 +184,11 @@ input[type=button] {
 }
 
 .form_row_div {
-  margin-top: 8px;
+  margin: 0 15px 15px 15px;
+}
+
+.ui-content {
+  padding: 0;
 }
 
 .ui-controlgroup-horizontal.ui-mini .ui-btn-inner {
@@ -188,6 +197,73 @@ input[type=button] {
 
 .create-new-template {
   padding: 4px 0;
+}
+
+.ui-btn-up-c, .ui-btn-hover-c {
+  font-weight: normal;
+  text-shadow: none;
+}
+
+.divider {
+  width: 100%;
+  border-top: 1px solid #ddd;
+  margin: 0 0 15px 0;
+}
+
+a.next, a.main, a.about {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+a.about {
+   width: 200px;
+   font-style:italic;
+   font-weight:normal;
+}
+
+a.release {
+  width: 180px;
+  margin-top: 8px;
+  margin-left: 15px;
+}
+
+a.next, a.release {
+  background: #7c7c7c;
+  padding: 10px 5px 10px 0;
+  color: #fff!important;
+  font-weight: bold!important;
+  border-radius: 30px;
+}
+
+a.next .ui-btn-inner, a.release .ui-btn-inner {
+  border-top: none;
+}
+
+option.prepopulated:checked, span.prepopulated, input.prepopulated,
+textarea.prepopulated {
+  color:  #42bd41;
+}
+
+.templates-control .templates {
+  max-width: 15em;
+  display: inline-block;
+}
+
+#current_alerts_div, #alert_view_div {
+  padding: 15px;
+ }
+
+.templates-control .re-apply {
+  max-width: 15em;
+  display: inline-block;
+  font-size: small;
+  margin-left: 1em;
+}
+
+.re-apply a {
+  text-decoration: none;
+  display: none;
+  font-weight: normal;
 }
 
 div.ui-input-text {

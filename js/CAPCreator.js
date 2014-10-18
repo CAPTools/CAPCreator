@@ -59,6 +59,8 @@ var area_descriptions = [];
 var area_templates;
 var message_templates;
 
+var messageTemplatePrepopulatedFieldIds = [];
+
 
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', '#info', function() {
@@ -183,10 +185,15 @@ function viewAlert(link) {
   });
 }
 
+function removePrepopulatedStyle(element) {
+  if (element) {
+    $(element).removeClass('prepopulated');
+  }
+}
 
 function handleAreaTemplateChange(urlPrefix, adminUrl) {
   handleTemplateChange(urlPrefix, '#select-area-template',
-                       'CreateNewAreaTemplate', adminUrl, function(alert) {
+                       '', 'CreateNewAreaTemplate', adminUrl, function(alert) {
     var info = alert.infos[0];
     var area = info.areas[0];
     if ($.inArray(area.areaDesc, area_descriptions) == -1) {
@@ -208,48 +215,79 @@ function handleAreaTemplateChange(urlPrefix, adminUrl) {
 
 function handleMessageTemplateChange(urlPrefix, adminUrl) {
   handleTemplateChange(urlPrefix, '#select-message-template',
-                       'CreateNewMessageTemplate', adminUrl, function(alert) {
-    var info = alert.infos[0];
-    // load message fields into the current view
-    if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
-      $('#select-status').val(alert.status).selectmenu('refresh');
-    }
-    $('#select-msgType').val(alert.msgType).selectmenu('refresh');
-    $('#select-scope').val(alert.scope).selectmenu('refresh');
+                       '#reapply-message-template', 'CreateNewMessageTemplate',
+                       adminUrl, function(alert) {
+    messageTemplatePrepopulatedFieldIds = [];
 
-    // only the first value is imported
-    $('#select-categories').val(info.categories[0]).selectmenu('refresh');
-    // only the first value is imported
-    $('#select-responseTypes').val(
-        info.responseTypes[0]).selectmenu('refresh');
-    $('#select-urgency').val(info.urgency).selectmenu('refresh');
-    $('#select-severity').val(info.severity).selectmenu('refresh');
-    $('#select-certainty').val(info.certainty).selectmenu('refresh');
-    $('#select-language').val(info.language).selectmenu('refresh');
+    function prepopulateValue(elementId, elementValue) {
+      if (elementValue) {
+        messageTemplatePrepopulatedFieldIds.push(elementId);
+        var element = $(elementId);
+        element.addClass('prepopulated');
+        element.val(elementValue);
+      }
+    }
+
+    function prepopulateMenu(elementId, elementValue) {
+      var element = $(elementId);
+      if (elementValue) {
+        messageTemplatePrepopulatedFieldIds.push(elementId);
+        element.val(elementValue);
+      }
+      element.find(':selected').addClass('prepopulated');
+      element.selectmenu('refresh');
+    }
+
+    $('#reapply-message-template').hide();
+    $('.prepopulated').removeClass('prepopulated');
+    prepopulateMenu('#select-message-template');
+
+    var info = alert.infos[0];
+    // Load message fields into the current view.
+    if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
+      prepopulateMenu('#select-status', alert.status);
+    }
+    prepopulateValue('#select-msgType', alert.msgType);
+    prepopulateValue('#select-scope', alert.scope);
+    prepopulateValue('#textarea-note', alert.note);
+    // Only the first value is imported.
+    if (info.categories && info.categories[0]) {
+      prepopulateMenu('#select-categories', info.categories[0]);
+    }
+    // Only the first value is imported.
+    if (info.responseTypes && info.responseTypes[0]) {
+      prepopulateMenu('#select-responseTypes', info.responseTypes[0]);
+    }
+    prepopulateMenu('#select-urgency', info.urgency);
+    prepopulateMenu('#select-severity', info.severity);
+    prepopulateMenu('#select-certainty', info.certainty);
+    prepopulateMenu('#select-language', info.language);
 
     if (!$('#select-language').val()) {
       $('#select-language').val(
           $('#ui-language').val()).selectmenu('refresh');
     }
+    prepopulateValue('#text-senderName', info.senderName);
+    prepopulateValue('#text-headline', info.headline);
+    prepopulateValue('#text-event', info.event);
+    prepopulateValue('#textarea-description', info.description);
+    prepopulateValue('#textarea-instruction', info.instruction);
+    prepopulateValue('#text-web', info.web);
+    prepopulateValue('#text-contact', info.contact);
+    prepopulateValue('#text-source', info.source);
 
-    $('#text-senderName').val(info.senderName);
-    $('#text-headline').val(info.headline);
-    $('#text-event').val(info.event);
-    $('#textarea-description').text(info.description);
-    $('#textarea-instruction').text(info.instruction);
-    $('#text-web').val(info.web);
-    $('#text-contact').val(info.contact);
-    $('#text-source').val(info.source);
-    $('#textarea-note').text(alert.note);
-    // clear and reload parameter set in widget
-    parameter_set.removeAll();
-    $(info.parameters).each(function() {
-      parameter_set.addAndPopulate(this.valueName, this.value);
-    });
+    if (info.parameters) {
+      // Clear and reload parameter set in widget.
+      parameter_set.removeAll();
+      $(info.parameters).each(function() {
+        parameter_set.addAndPopulate(this.valueName, this.value);
+      });
+      $('.tuple_text_input').addClass('prepopulated');
+    }
   });
 }
 
-function handleTemplateChange(urlPrefix, selectId,
+function handleTemplateChange(urlPrefix, selectId, reapplyTemplateId,
     createNewTemplateId, createNewTemplateUrl, onSuccess) {
 
   function createPopupWindow(url, width, height) {
@@ -264,6 +302,7 @@ function handleTemplateChange(urlPrefix, selectId,
 
   var templateId = $(selectId).find(':selected').val();
   if (templateId && templateId == createNewTemplateId) {
+    $(reapplyTemplateId).hide();
     var newTab = createPopupWindow(createNewTemplateUrl, 800, 400);
   } else if (templateId && templateId != 'None') {
     var link = urlPrefix + '?template_id=' + templateId;
@@ -277,6 +316,8 @@ function handleTemplateChange(urlPrefix, selectId,
         onSuccess(alert);
       }
     });
+  } else {
+    $(reapplyTemplateId).hide();
   }
 }
 
@@ -295,7 +336,7 @@ function setLanguage(language, csrfToken) {
 }
 
 // update model with values from screen
-function view2model() {
+function view2model(element) {
   alert.identifier = 'pending';
   alert.sender = 'unverified';
   var now = new Date();
@@ -358,6 +399,14 @@ function view2model() {
   if (geocode_set) {
     area.geocodes = geocode_set.getAll();
   }
+  if (element) {
+    var el = $(element);
+    el.removeClass('prepopulated');
+    if (messageTemplatePrepopulatedFieldIds.indexOf(
+        '#' + el.attr('id')) != -1) {
+      $('#reapply-message-template').show();
+    }
+  }
 }
 
 
@@ -403,7 +452,7 @@ function sendAlert(csrfToken) {
           parameter_set.removeAll();  // Clear parameter set.
           area_descriptions = [];  // Clear area descriptions.
           // and after delay, loop back to the Current Alerts screen
-          setTimeout(function() { window.location.href = "/"; }, 3000);
+          setTimeout(function() { window.location.href = '/'; }, 3000);
         },
         error: function(data, textStatus, errorThrown) {
           result_message = result_message +
