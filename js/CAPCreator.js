@@ -38,7 +38,8 @@
  *
  * DEPENDENCIES AND REQUIREMENTS:
  * OpenLayers, jQuery and jQuery Mobile as well as local libraries
- * config.js, caplib.js cap_map.js and widgets.js must be loaded in the HTML first
+ * config.js, caplib.js cap_map.js and widgets.js must be loaded in the
+ * HTML first.
  *
  *
  */
@@ -64,8 +65,7 @@ var messageTemplatePrepopulatedFieldIds = [];
 
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', '#info', function() {
-  parameter_set = new CapTupleSetWidget(
-    'Parameter (optional)', area, $('#parameter_div'));
+  parameter_set = new CapTupleSetWidget('Parameter', area, $('#parameter_div'));
   $('.tm').html('CAPCreator&trade; ' + versionID);
   $('#textarea-note').val('Using CAPCreator' + versionID);
   // On initialization pick up default language.
@@ -73,8 +73,7 @@ $(document).on('pageinit', '#info', function() {
   info.language = $('#ui-language').val();
 });
 $(document).on('pageinit', '#area', function() {
-  geocode_set = new CapTupleSetWidget(
-    'Geocode (optional)', area, $('#geocode_div'));
+  geocode_set = new CapTupleSetWidget('Geocode', area, $('#geocode_div'));
 });
 
 
@@ -244,11 +243,13 @@ function handleMessageTemplateChange(urlPrefix, adminUrl) {
 
     var info = alert.infos[0];
     // Load message fields into the current view.
-    if ((alert.msgType != 'Update') && (alert.msgType != 'Cancel')) {
-      prepopulateMenu('#select-status', alert.status);
+
+    prepopulateMenu('#select-status', alert.status);
+    // Don't change message type for 'Update' and 'Cancel'.
+    if (!$('#hidden-references').val()) {
+      prepopulateMenu('#select-msgType', alert.msgType);
     }
-    prepopulateValue('#select-msgType', alert.msgType);
-    prepopulateValue('#select-scope', alert.scope);
+    prepopulateMenu('#select-scope', alert.scope);
     prepopulateValue('#textarea-note', alert.note);
     // Only the first value is imported.
     if (info.categories && info.categories[0]) {

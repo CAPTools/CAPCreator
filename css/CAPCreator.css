@@ -45,7 +45,7 @@
 }
 
 .jqm-content {
-  margin: 2px 0px 5px 0px;
+  margin: 10px 0px 5px 0px;
 }
 
 .jqm-footer {
@@ -112,15 +112,16 @@ input[type=button] {
   cursor: pointer;
 }
 
-.tuple_text_input {
-  width:40%;
-  margin:2px;
+.tuple-text {
+  width: 39%!important;
+  display: inline-block!important;
+  margin: 0 .2em 0 0!important;
 }
 
 .ui-mini .ui-btn-inner .ui-btn-text {
-    font-size: 12px;
-    padding: 2px;
-    margin: 2px;
+  font-size: 12px;
+  padding: 2px;
+  margin: 2px;
 }
 
 .info_block {
@@ -153,7 +154,7 @@ input[type=button] {
 }
 
 #current_alerts_div {
-  margin:0px;
+  margin: 0px;
   font-size: 0.6em;
   height: 400px;
   background-color: White;
@@ -250,7 +251,7 @@ textarea.prepopulated {
 }
 
 #current_alerts_div, #alert_view_div {
-  padding: 15px;
+  padding: 0 15px 15px 15px;
  }
 
 .templates-control .re-apply {
@@ -278,4 +279,8 @@ div.ui-input-text {
 
 .required {
   color: red;
+}
+
+a.parameter {
+  display: inline-block;
 }
