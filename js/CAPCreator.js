@@ -80,6 +80,8 @@ $(document).on('pageinit', '#area', function() {
 $(document).on('pageinit', '#alert', function() {
   // Hide custom expiration time input on page init.
   $('#custom-expiration-time-block').hide();
+  // Set default expiration time to 1 hour.
+  $('#select-expires-min').val('60').selectmenu('refresh');
 });
 
 
@@ -184,9 +186,17 @@ function viewAlert(link) {
   });
 }
 
-function removePrepopulatedStyle(element) {
+function removeStyles(element) {
   if (element) {
-    $(element).removeClass('prepopulated');
+    var el = $(element);
+    // Remove pre-populated from template related styles.
+    el.removeClass('prepopulated');
+    // Remove validation related styles.
+    el.removeClass('indicate-required-select');
+    el.closest('.indicate-required-input').removeClass(
+        'indicate-required-input');
+    el.closest('.indicate-required-select').removeClass(
+        'indicate-required-select');
   }
 }
 
@@ -401,10 +411,9 @@ function view2model(element) {
     area.geocodes = geocode_set.getAll();
   }
   if (element) {
-    var el = $(element);
-    el.removeClass('prepopulated');
+    removeStyles(element);
     if (messageTemplatePrepopulatedFieldIds.indexOf(
-        '#' + el.attr('id')) != -1) {
+        '#' + $(element).attr('id')) != -1) {
       $('#reapply-message-template').show();
     }
   }
@@ -568,3 +577,44 @@ function cap2html(cap_xml) {
       '</tr>\n' + '</table>\n';
   return html;
 }
+
+
+function validate(elementId) {
+  var isValid = true;
+  var requiredFields = $(elementId + ' .required-field');
+  var requiredPlaceholder = $(elementId + ' .required-placeholder');
+
+  $.each(requiredFields, function() {
+    var tagName = $(this).prop('tagName').toLowerCase();
+    if (tagName == 'select' && !$(this).find(':selected').val()) {
+      $(this).closest('.ui-btn-up-c').addClass('indicate-required-select');
+      isValid = false;
+    } else if ((tagName == 'input' || tagName == 'textarea') &&
+        !$(this).val()) {
+      $(this).parents('div.form_row_div').find(
+          '.ui-input-text').addClass('indicate-required-input');
+      isValid = false;
+    }
+    requiredPlaceholder.show();
+  });
+
+  if (isValid) {
+    requiredPlaceholder.hide();
+  }
+
+  return isValid;
+}
+
+
+function validateBeforeNavigate(buttonId, currentTab, nextTab) {
+  $(document).on('click', buttonId, function() {
+    if (validate(currentTab)) {
+      $.mobile.navigate(nextTab);
+    }
+  });
+}
+
+
+validateBeforeNavigate('#alert-next-button', '#alert', '#info');
+validateBeforeNavigate('#info-next-button', '#info', '#area');
+validateBeforeNavigate('#area-next-button', '#area', '#release');

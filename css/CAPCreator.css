@@ -277,10 +277,24 @@ div.ui-input-text {
   min-height: 3em;
 }
 
-.required {
+.required, .required-placeholder, .indicate-required-select {
   color: red;
+}
+
+.required-placeholder {
+  padding: 0 0 0 15px;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+.indicate-required-input {
+  border: 1px solid red;
 }
 
 a.parameter {
   display: inline-block;
+}
+
+.hidden {
+  display: none;
 }
