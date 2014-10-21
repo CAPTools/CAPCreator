@@ -421,10 +421,16 @@ function view2model(element) {
 
 
 // submit alert JSON to server
-function sendAlert(csrfToken) {
+function sendAlert(csrfToken, element) {
   var result_message = '';
   var uid = $('#text-uid').val();
   var password = $('#text-pwd').val();
+
+  $('#sending-alert-button').addClass('hidden');
+  $('#sending-alert-indicator').removeClass('hidden');
+  $('#response_status').html('');
+  $(element).unbind('click');
+
   $.ajax(submitUrl, {
       type: 'POST',
       data: {
@@ -436,9 +442,8 @@ function sendAlert(csrfToken) {
       dataType: 'json',
         success: function(data, textStatus, jqXHR) {
           var response_json = data;
-
           var isAuthenticated = response_json['authenticated'];
-          if (! isAuthenticated) {
+          if (!isAuthenticated) {
             result_message = result_message +
                              'FAILED: Wrong User ID or Password<br>\n';
             $('#response_status').html(result_message);
@@ -454,6 +459,7 @@ function sendAlert(csrfToken) {
                              response_json.error + '\n';
           }
           result_uuid = 'UUID: ' + response_json['uuid'];
+          $(element).hide();
           // display the result
           $('#response_status').html(result_message);
           $('#response_uuid').html(result_uuid);
@@ -461,18 +467,23 @@ function sendAlert(csrfToken) {
           $('#text-pwd').val('');  // Clear the password field.
           parameter_set.removeAll();  // Clear parameter set.
           area_descriptions = [];  // Clear area descriptions.
-          // and after delay, loop back to the Current Alerts screen
+          // And after delay, loop back to the "Current Alerts" screen.
           setTimeout(function() { window.location.href = '/'; }, 3000);
         },
         error: function(data, textStatus, errorThrown) {
-          result_message = result_message +
-                           'POSSIBLE ERROR IN TRANSMISSION<br>\n';
-          result_message = result_message +
-                           'Check active alerts before resending.<br>\n';
-          console.log('Error: ' + data.status + ' ' + data.responseText);
-          result_message += data.responseText;
-          // display the results
-          $('#response_status').html(result_message);
+          setTimeout(function() {
+            $('#sending-alert-indicator').addClass('hidden');
+            $('#sending-alert-button').removeClass('hidden');
+            $(element).click(function() {
+              sendAlert.call(csrfToken, element);
+            });
+            result_message = result_message +
+                             'POSSIBLE ERROR IN TRANSMISSION.';
+            result_message = result_message + ' ' +
+                             'Check active alerts before resending.';
+            $('#response_status').html(result_message); // Display the results.
+            console.log('Error: ' + data.status + ' ' + data.responseText);
+          }, 300);
         }
     });
 }
