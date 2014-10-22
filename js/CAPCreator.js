@@ -619,7 +619,27 @@ function validate(elementId) {
 
 function validateBeforeNavigate(buttonId, currentTab, nextTab) {
   $(document).on('click', buttonId, function() {
-    if (validate(currentTab)) {
+    var inputIsValid = validate(currentTab);  // Input validation goes first.
+    var tabSpecificIsValid = true;
+
+    // Tab specific validations.
+    if (currentTab == '#area') {  // Area tab.
+      var area = alert.infos[0].areas[0];
+      var requiredAreaPlaceholder = $('.required-combined-placeholder');
+      var validGeocode = false;
+      if (area.geocodes.length) {
+        validGeocode = area.geocodes[0][0] && area.geocodes[0][1];
+      }
+      if (!area.circles.length && !area.polygons.length && !validGeocode) {
+        requiredAreaPlaceholder.removeClass('hidden');
+        tabSpecificIsValid = false;
+      } else {
+        requiredAreaPlaceholder.addClass('hidden');
+        tabSpecificIsValid = true;
+      }
+    }
+
+    if (inputIsValid && tabSpecificIsValid) {
       $.mobile.navigate(nextTab);
     }
   });

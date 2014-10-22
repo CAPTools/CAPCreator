@@ -278,11 +278,12 @@ div.ui-input-text {
   min-height: 3em;
 }
 
-.required, .required-placeholder, .indicate-required-select {
+.required, .required-placeholder, .indicate-required-select,
+.required-combined-placeholder {
   color: red;
 }
 
-.required-placeholder {
+.required-placeholder, .required-combined-placeholder {
   padding: 0 0 0 15px;
   font-size: 0.7em;
   font-weight: bold;

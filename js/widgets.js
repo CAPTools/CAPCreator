@@ -61,8 +61,8 @@ var CapParameterWidget = function(name, placeholder) {
       'ui-corner-all ui-btn-shadow ui-body-c ui-mini"><input type="text" ' +
       'name="' + name + '" data-mini="true" placeholder="' + placeholder + '"' +
       'onchange="view2model(this)" ' +
-      'onkeydown="removePrepopulatedStyle(this)" ' +
-      'onpaste="removePrepopulatedStyle(this)" ' +
+      'onkeydown="removeStyles(this)" ' +
+      'onpaste="removeStyles(this)" ' +
       'class="ui-input-text ui-body-c"></div>');
 };
 
