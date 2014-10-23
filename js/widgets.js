@@ -57,13 +57,15 @@ var CapButtonWidget = function(label, width) {
 };
 
 var CapParameterWidget = function(name, placeholder) {
-  return $('<div class="tuple-text ui-input-text ui-shadow-inset ' +
+  return $('<div class="cap-parameter">' +
+      '<div class="invalid-placeholder-message hidden">Fill in placeholder' +
+      ' <span class="invalid-placeholder-message-error"></span></div>' +
+      '<div class="tuple-text ui-input-text ui-shadow-inset ' +
       'ui-corner-all ui-btn-shadow ui-body-c ui-mini"><input type="text" ' +
       'name="' + name + '" data-mini="true" placeholder="' + placeholder + '"' +
-      'onchange="view2model(this)" ' +
-      'onkeydown="removeStyles(this)" ' +
+      'onchange="view2model(this)" onkeydown="removeStyles(this)" ' +
       'onpaste="removeStyles(this)" ' +
-      'class="ui-input-text ui-body-c"></div>');
+      'class="ui-input-text ui-body-c placeholder-field"></div></div>');
 };
 
 var CapTupleSetWidget = function(label, area, div) {

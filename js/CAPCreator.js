@@ -197,6 +197,8 @@ function removeStyles(element) {
         'indicate-required-input');
     el.closest('.indicate-required-select').removeClass(
         'indicate-required-select');
+    el.closest('.indicate-invalid-placeholder').removeClass(
+        'indicate-invalid-placeholder');
   }
 }
 
@@ -217,7 +219,7 @@ function handleAreaTemplateChange(urlPrefix, adminUrl) {
         addCapCircleToMap(String(this));
       });
     }
-    $('#textarea-areaDesc').text(area_descriptions.join(', '));
+    $('#textarea-areaDesc').val(area_descriptions.join(', '));
   });
 }
 
@@ -328,6 +330,7 @@ function handleTemplateChange(urlPrefix, selectId, reapplyTemplateId,
       }
     });
   } else {
+    $('.prepopulated').removeClass('prepopulated');
     $(reapplyTemplateId).hide();
   }
 }
@@ -413,7 +416,8 @@ function view2model(element) {
   if (element) {
     removeStyles(element);
     if (messageTemplatePrepopulatedFieldIds.indexOf(
-        '#' + $(element).attr('id')) != -1) {
+        '#' + $(element).attr('id')) != -1 &&
+        $('#select-message-template').val() != 'None') {
       $('#reapply-message-template').show();
     }
   }
@@ -509,11 +513,12 @@ function alert2view(alert) {
   $('#text-senderName').val(info.senderName);
   $('#text-event').val(info.event);
   $('#text-headline').val(info.headline);
-  $('#textarea-description').text(info.description);
-  $('#textarea-instruction').text(info.instruction);
+  $('#textarea-description').val(info.description);
+  $('#textarea-instruction').val(info.instruction);
   $('#text-contact').val(info.contact);
   $('#text-source').val(info.source);
-  $('#textarea-note').text(area.note);
+  $('#text-web').val(info.web);
+  $('#textarea-note').val(area.note);
 
   // clear and reload parameter set in widget
   parameter_set.removeAll();
@@ -523,7 +528,7 @@ function alert2view(alert) {
 
   // resources currently not implemented
 
-  $('#textarea-areaDesc').text(area.areaDesc);
+  $('#textarea-areaDesc').val(area.areaDesc);
 
   // clear and reload geocode set in widget
   geocode_set.removeAll();
@@ -590,8 +595,40 @@ function cap2html(cap_xml) {
 }
 
 
+function resetAllFields() {
+  var blankAlert = new Alert();
+  var blankInfo = blankAlert.addInfo();
+  var blankArea = blankInfo.addArea();
+
+  // Clear template selections.
+  $('#select-message-template').val('None').selectmenu('refresh');
+  $('#select-area-template').val('None').selectmenu('refresh');
+
+  // Remove styles.
+  $('.indicate-required-select').removeClass('indicate-required-select');
+  $('.prepopulated').removeClass('prepopulated');
+  $('.invalid-placeholder').addClass('hidden');
+  $('.required-combined-placeholder').addClass('hidden');
+  $('.required-placeholder').hide();
+  $('#reapply-message-template').hide();
+
+  alert2view(blankAlert);
+}
+
+
+$(document).on('click', '#current-next-button', function() {
+  resetAllFields();
+  $.mobile.navigate('#alert');
+});
+
+
 function validate(elementId) {
-  var isValid = true;
+  // Hide error messages.
+  $('.invalid-placeholder-message').addClass('hidden');
+  $('.invalid-placeholder-message-error').text('');
+
+  // Required fields validation.
+  var requiredFieldsValid = true;
   var requiredFields = $(elementId + ' .required-field');
   var requiredPlaceholder = $(elementId + ' .required-placeholder');
 
@@ -599,21 +636,65 @@ function validate(elementId) {
     var tagName = $(this).prop('tagName').toLowerCase();
     if (tagName == 'select' && !$(this).find(':selected').val()) {
       $(this).closest('.ui-btn-up-c').addClass('indicate-required-select');
-      isValid = false;
+      requiredFieldsValid = false;
     } else if ((tagName == 'input' || tagName == 'textarea') &&
         !$(this).val()) {
       $(this).parents('div.form_row_div').find(
           '.ui-input-text').addClass('indicate-required-input');
-      isValid = false;
+      requiredFieldsValid = false;
     }
     requiredPlaceholder.show();
   });
 
-  if (isValid) {
+  if (requiredFieldsValid) {
     requiredPlaceholder.hide();
   }
 
-  return isValid;
+  // Template placeholders validation.
+  var templateFieldsValid = true;
+  var templateFields = $(elementId + ' .placeholder-field');
+  var templatePlaceholder = $(elementId + ' .invalid-placeholder');
+
+  $.each(templateFields, function() {
+    var fieldValue = $(this).val();
+    var templateRegExp = new RegExp('{{.*?}}', 'g');
+    var matchArray = fieldValue.match(templateRegExp);
+
+    var validateTemplatesPlaceholder = $(this).parents('.form_row_div').find(
+        '.invalid-placeholder-message');
+    var validateTemplatesError = validateTemplatesPlaceholder.find(
+        '.invalid-placeholder-message-error');
+
+    if (matchArray) {
+      templateFieldsValid = false;
+      var elementName = $(this).attr('name');
+
+      if (elementName == 'valueName' || elementName == 'value') {
+        var parentDiv = $(this).parents('.cap-parameter');
+        parentDiv.find('div.tuple-text').addClass(
+            'indicate-invalid-placeholder');
+        validateTemplatesPlaceholder = parentDiv.find(
+            '.invalid-placeholder-message');
+        validateTemplatesError = validateTemplatesPlaceholder.find(
+            '.invalid-placeholder-message-error');
+      } else {
+        validateTemplatesError = validateTemplatesPlaceholder.find(
+            '.invalid-placeholder-message-error');
+        $(this).parents('div.form_row_div').find('.ui-input-text').addClass(
+            'indicate-invalid-placeholder');
+      }
+
+      validateTemplatesPlaceholder.removeClass('hidden');
+      validateTemplatesError.text(matchArray[0]);
+      templatePlaceholder.show();
+    }
+  });
+
+  if (templateFieldsValid) {
+    templatePlaceholder.hide();
+  }
+
+  return requiredFieldsValid && templateFieldsValid;
 }
 
 

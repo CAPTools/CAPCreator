@@ -57,9 +57,9 @@ var Alert = function() {
   this.identifier = '';  // REQUIRED
   this.sender = '';  // REQUIRED
   this.sent = '';  // REQUIRED
-  this.status = '';  // REQUIRED: values Actual, Exercise, System, Test, Draft
-  this.msgType = '';  // REQUIRED: values Alert, Update, Cancel, Ack, Error
-  this.scope = '';  // REQUIRED: values Public, Restricted, Private
+  this.status = 'Actual';  // REQUIRED: values Actual, Exercise, System, Test, Draft
+  this.msgType = 'Alert';  // REQUIRED: values Alert, Update, Cancel, Ack, Error
+  this.scope = 'Public';  // REQUIRED: values Public, Restricted, Private
   this.source = '';
   this.restriction;
   this.addresses;
@@ -263,11 +263,11 @@ var Info = function() {
   this.event = '';  // REQUIRED
   this.responseTypes = [];
   // Values: Immediate, Expected, Future, Past, Unknown.
-  this.urgency = 'Unknown';  // REQUIRED
+  this.urgency = '';  // REQUIRED
   // Values: Extreme, Severe, Moderate, Minor, Unknown.
-  this.severity = 'Unknown';  // REQUIRED
+  this.severity = '';  // REQUIRED
   // Values: Observed, Likely, Possible, Unlikely, Unknown.
-  this.certainty = 'Unknown';  // REQUIRED
+  this.certainty = '';  // REQUIRED
   this.audience = '';
   this.eventCodes = [];
   this.effective = '';
@@ -340,7 +340,7 @@ Resource.prototype.getJSON = function() {
 
 // AREA Object
 var Area = function() {
-  this.areaDesc = 'Unspecified Area';  // REQUIRED
+  this.areaDesc = '';  // REQUIRED
   this.polygons = [];
   this.circles = [];
   this.geocodes = [];

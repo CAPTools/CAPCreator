@@ -113,7 +113,7 @@ input[type=button] {
 }
 
 .tuple-text {
-  width: 39%!important;
+  width: 90%!important;
   display: inline-block!important;
   margin: 0 .2em 0 0!important;
 }
@@ -279,17 +279,21 @@ div.ui-input-text {
 }
 
 .required, .required-placeholder, .indicate-required-select,
+.invalid-placeholder, .invalid-placeholder-message,
 .required-combined-placeholder {
   color: red;
 }
 
-.required-placeholder, .required-combined-placeholder {
-  padding: 0 0 0 15px;
+.required-placeholder, .required-combined-placeholder, .invalid-placeholder {
   font-size: 0.7em;
   font-weight: bold;
 }
 
-.indicate-required-input {
+.required-placeholder, .invalid-placeholder, .required-combined-placeholder {
+  padding: 0 0 0 15px;
+}
+
+.indicate-required-input, .indicate-invalid-placeholder {
   border: 1px solid red;
 }
 
@@ -299,4 +303,17 @@ a.parameter {
 
 .hidden {
   display: none;
+}
+
+.cap-parameter {
+  display: inline-block;
+  max-width: 210px!important;
+  width: 210px;
+}
+
+.cap-parameter .invalid-placeholder-message {
+  margin: 3px 0 3px 3px;
+  overflow-wrap: break-word;
+  font-size: 0.7em;
+  font-weight: bold;
 }
