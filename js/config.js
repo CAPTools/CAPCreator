@@ -51,6 +51,7 @@ var CAPCreatorConfiguration = function(mapDefaultViewport) {
   this.OpenLayersImgPath = "client/img/";
   this.mapDefaultViewport = mapDefaultViewport;
   this.atomUrl = "/feed.xml";
+  this.defaultExpiresDurationMinutes = 60;
   this.maxHeadlineLength = 140;
   this.versionID = "0.9.3";
 }

@@ -81,7 +81,8 @@ $(document).on('pageinit', '#alert', function() {
   // Hide custom expiration time input on page init.
   $('#custom-expiration-time-block').hide();
   // Set default expiration time to 1 hour.
-  $('#select-expires-min').val('60').selectmenu('refresh');
+  $('#select-expires-min').val(
+      config.defaultExpiresDurationMinutes).selectmenu('refresh');
 });
 
 
@@ -249,6 +250,7 @@ function handleMessageTemplateChange(urlPrefix, adminUrl) {
       element.selectmenu('refresh');
     }
 
+    $('#custom-expiration-time-block').hide();
     $('#reapply-message-template').hide();
     $('.prepopulated').removeClass('prepopulated');
     prepopulateMenu('#select-message-template');
@@ -274,6 +276,17 @@ function handleMessageTemplateChange(urlPrefix, adminUrl) {
     prepopulateMenu('#select-urgency', info.urgency);
     prepopulateMenu('#select-severity', info.severity);
     prepopulateMenu('#select-certainty', info.certainty);
+    if (alert.expiresDurationMinutes) {
+      prepopulateMenu('#select-expires-min', alert.expiresDurationMinutes);
+      if ($('#select-expires-min').val() != alert.expiresDurationMinutes) {
+        prepopulateMenu('#select-expires-min', 'Other');
+        $('#custom-expiration-time-block').show();
+        prepopulateValue('#text-expires', alert.expiresDurationMinutes);
+      }
+    } else {
+      $('#select-expires-min').val(
+          config.defaultExpiresDurationMinutes).selectmenu('refresh');
+    }
     prepopulateMenu('#select-language', info.language);
 
     if (!$('#select-language').val()) {
@@ -325,7 +338,7 @@ function handleTemplateChange(urlPrefix, selectId, reapplyTemplateId,
       cache: false,
       success: function(data, status, jqXHR) {
         var xml = jqXHR.responseText;
-        var alert = parseCAP2Alert(xml);
+        var alert = parseTemplateToAlert(xml);
         onSuccess(alert);
       }
     });
@@ -348,6 +361,16 @@ function setLanguage(language, csrfToken) {
     }
   });
 }
+
+
+function parseTemplateToAlert(template_xml) {
+  var xml = $.parseXML(template_xml);
+  var alert = parseCAP2Alert(xml);
+  // Non-CAP-compliant fields:
+  alert.expiresDurationMinutes = $(xml).find('expiresDurationMinutes').text();
+  return alert;
+}
+
 
 // update model with values from screen
 function view2model(element) {

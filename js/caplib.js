@@ -370,7 +370,7 @@ var Geocode = function(valueName, value) {
 
 //parse XML string into an Alert object
 function parseCAP2Alert(cap_xml) {
-  var xml = $.parseXML(cap_xml);
+  var xml = typeof cap_xml === 'object' ? cap_xml : $.parseXML(cap_xml);
   // populate new alert with values from XML
   var alert = new Alert();
   alert.identifier = $(xml).find('identifier').text();
