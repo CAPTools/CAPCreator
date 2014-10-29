@@ -68,10 +68,18 @@ $(document).on('pageinit', '#info', function() {
   parameter_set = new CapTupleSetWidget('Parameter', area, $('#parameter_div'));
   $('.tm').html('CAPCreator&trade; ' + versionID);
   $('#textarea-note').val('Using CAPCreator' + versionID);
-  // On initialization pick up default language.
-  $('#select-language').val($('#ui-language').val()).selectmenu('refresh');
+});
+
+
+$(document).on('pageshow', '#info', function() {
+  // On show pick up default language if no language specified.
+  if (!$('#select-language').val()) {
+    $('#select-language').val($('#ui-language').val()).selectmenu('refresh');
+  }
   info.language = $('#ui-language').val();
 });
+
+
 $(document).on('pageinit', '#area', function() {
   geocode_set = new CapTupleSetWidget('Geocode', area, $('#geocode_div'));
 });
@@ -532,7 +540,7 @@ function alert2view(alert) {
   $('#select-severity').val(info.severity).selectmenu('refresh');
   $('#select-certainty').val(info.certainty).selectmenu('refresh');
   // expiration is not imported
-  $('#select-language').val(info.language);
+  $('#select-language').val(info.language).selectmenu('refresh');
   $('#text-senderName').val(info.senderName);
   $('#text-event').val(info.event);
   $('#text-headline').val(info.headline);
