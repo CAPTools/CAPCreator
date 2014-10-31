@@ -58,7 +58,8 @@ var CapButtonWidget = function(label, width) {
 
 var CapParameterWidget = function(name, placeholder) {
   return $('<div class="cap-parameter">' +
-      '<div class="invalid-placeholder-message hidden">Fill in placeholder' +
+      '<div class="invalid-placeholder-message hidden">' +
+      gettext('Fill in placeholder') +
       ' <span class="invalid-placeholder-message-error"></span></div>' +
       '<div class="tuple-text ui-input-text ui-shadow-inset ' +
       'ui-corner-all ui-btn-shadow ui-body-c ui-mini"><input type="text" ' +
@@ -72,7 +73,7 @@ var CapTupleSetWidget = function(label, area, div) {
   this.div = div;
   this.area = area;
   this.tuples = [];
-  label = 'Add a ' + label;
+  label = gettext('Add a %s').replace('%s', label)
   this.addButton = new CapButtonWidget(label, 200);
   this.addButton.on('click', null, this, this.addItem).appendTo($(this.div));
 };
@@ -129,14 +130,14 @@ var CapTupleWidget = function(tupleSet, widget_width) {
   this.div = $(document.createElement('div')).attr('class', 'tuple_holder');
   $(this.div).width(widget_width);
 
-  this.valueName = CapParameterWidget('valueName', 'name');
+  this.valueName = CapParameterWidget('valueName', gettext('name'));
   this.valueName.appendTo($(this.div));
   this.valueName.change(tupleSet.changed);
 
-  this.value = CapParameterWidget('value', 'value');
+  this.value = CapParameterWidget('value', gettext('value'));
   this.value.appendTo($(this.div));
   this.value.change(tupleSet.changed);
-  this.delButton = CapButtonWidget('Delete', 75);
+  this.delButton = CapButtonWidget(gettext('Delete'), 75);
   this.delButton.on('click', null, this,
                     tupleSet.deleteItem).appendTo($(this.div));
   return this;

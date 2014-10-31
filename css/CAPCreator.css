@@ -134,6 +134,11 @@ input[type=button] {
   font-weight:bold;
 }
 
+.review-label {
+  margin-top: 15px;
+  margin-left: 8px;
+}
+
 #headline_length {
   font-style: italic;
 }
@@ -210,6 +215,11 @@ input[type=button] {
   width: 100%;
   border-top: 1px solid #ddd;
   margin: 0 0 15px 0;
+}
+
+a.main, a.next {
+  whitespace: normal;
+  width: 200px;
 }
 
 a.next, a.main, a.about {

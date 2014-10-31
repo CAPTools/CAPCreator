@@ -65,7 +65,8 @@ var messageTemplatePrepopulatedFieldIds = [];
 
 // When initializing pages, apply data-set widgets
 $(document).on('pageinit', '#info', function() {
-  parameter_set = new CapTupleSetWidget('Parameter', area, $('#parameter_div'));
+  parameter_set = new CapTupleSetWidget(gettext('Parameter'), area,
+                                        $('#parameter_div'));
   $('.tm').html('CAPCreator&trade; ' + versionID);
   $('#textarea-note').val('Using CAPCreator' + versionID);
 });
@@ -81,7 +82,8 @@ $(document).on('pageshow', '#info', function() {
 
 
 $(document).on('pageinit', '#area', function() {
-  geocode_set = new CapTupleSetWidget('Geocode', area, $('#geocode_div'));
+  geocode_set = new CapTupleSetWidget(gettext('Geocode'), area,
+                                      $('#geocode_div'));
 });
 
 
@@ -94,7 +96,7 @@ $(document).on('pageinit', '#alert', function() {
 });
 
 
-// Any time we enter the Current Alerts page, get ATOM feed and update display
+// Any time we enter the Current Alerts page, get ATOM feed and update display.
 $(document).on('pageshow', '#current', function() {
   $.ajax({
     url: atomUrl,
@@ -176,6 +178,7 @@ function viewAlert(link) {
         $('#select-message-template').val('None').selectmenu('refresh');
         $('#select-area-template').val('None').selectmenu('refresh');
         alert.msgType = 'Cancel';
+        clearWebFieldIfAutopopulated(alert);
         alert2view(alert);
         $.mobile.navigate('#alert');
       });
@@ -183,6 +186,7 @@ function viewAlert(link) {
         $('#select-message-template').val('None').selectmenu('refresh');
         $('#select-area-template').val('None').selectmenu('refresh');
         alert.msgType = 'Update';
+        clearWebFieldIfAutopopulated(alert);
         alert2view(alert);
         $.mobile.navigate('#alert');
       });
@@ -193,6 +197,17 @@ function viewAlert(link) {
       });
     }
   });
+}
+
+/**
+ * Clear the web field set automatically by the app when prepopulating alert
+ * data for update or cancel.
+ */
+function clearWebFieldIfAutopopulated(alert) {
+  var info = alert.infos[0];
+  if (info.web.indexOf('/feed/' + alert.identifier) != -1) {
+    info.web = '';
+  }
 }
 
 function removeStyles(element) {
@@ -268,7 +283,7 @@ function handleMessageTemplateChange(urlPrefix, adminUrl) {
 
     prepopulateMenu('#select-status', alert.status);
     // Don't change message type for 'Update' and 'Cancel'.
-    if (!$('#hidden-references').val()) {
+    if (alert.msgType != 'Update' && alert.msgType != 'Cancel') {
       prepopulateMenu('#select-msgType', alert.msgType);
     }
     prepopulateMenu('#select-scope', alert.scope);
@@ -408,7 +423,8 @@ function view2model(element) {
   info.categories = [];
   info.addCategory($('#select-categories').val());
   info.responseTypes = [];
-  info.addResponseType($('#select-responseTypes').val());
+  // Set default response type if not set.
+  info.addResponseType($('#select-responseTypes').val() || 'None');
   info.urgency = $('#select-urgency').val();
   info.severity = $('#select-severity').val();
   info.certainty = $('#select-certainty').val();
@@ -477,25 +493,19 @@ function sendAlert(csrfToken, element) {
       dataType: 'json',
         success: function(data, textStatus, jqXHR) {
           var response_json = data;
-          var isAuthenticated = response_json['authenticated'];
-          if (!isAuthenticated) {
-            result_message = result_message +
-                             'FAILED: Wrong User ID or Password<br>\n';
-            $('#response_status').html(result_message);
-            return;
-          }
           var isValid = response_json['valid'];
           if (isValid) {
             result_message = result_message +
-                             'Success: Valid CAP 1.2 MESSAGE SENT<br>\n';
+                gettext('Success: Valid CAP 1.2 MESSAGE SENT') + '<br>\n';
           } else {
-            result_message = result_message + 'INVALID CAP 1.2<br>\n';
-            result_message = result_message + 'SERVER MESSAGE: ' +
+            result_message = result_message +
+                gettext('INVALID CAP 1.2') + '<br>\n';
+            result_message = result_message + gettext('SERVER MESSAGE') + ': ' +
                              response_json.error + '\n';
           }
           result_uuid = 'UUID: ' + response_json['uuid'];
           $(element).hide();
-          // display the result
+          // Display the result.
           $('#response_status').html(result_message);
           $('#response_uuid').html(result_uuid);
           $('#text-uid').val('');  // Clear the uid field.
@@ -512,12 +522,27 @@ function sendAlert(csrfToken, element) {
             $(element).click(function() {
               sendAlert.call(csrfToken, element);
             });
-            result_message = result_message +
-                             'POSSIBLE ERROR IN TRANSMISSION.';
-            result_message = result_message + ' ' +
-                             'Check active alerts before resending.';
-            $('#response_status').html(result_message); // Display the results.
-            console.log('Error: ' + data.status + ' ' + data.responseText);
+            if (data.status == 400) {
+              result_message = gettext(
+                  'Please enter valid login and password.');
+              $('#response_status').html(result_message);
+              return;
+            } else if (data.status == 403) {
+              result_message = gettext(
+                  'You are not authorized to release alerts. ' +
+                  'Ask your app administrator to be added to the ' +
+                  '"can release alerts" group.');
+              $('#response_status').html(result_message);
+              return;
+            } else {
+              result_message = result_message +
+                               gettext('POSSIBLE ERROR IN TRANSMISSION.');
+              result_message = result_message + ' ' +
+                               gettext('Check active alerts before resending.');
+              // Display the results.
+              $('#response_status').html(result_message);
+              console.log('Error: ' + data.status + ' ' + data.responseText);
+            }
           }, 300);
         }
     });
@@ -552,7 +577,9 @@ function alert2view(alert) {
   $('#textarea-note').val(area.note);
 
   // clear and reload parameter set in widget
-  parameter_set.removeAll();
+  if (parameter_set) {
+    parameter_set.removeAll();
+  }
   $(info.parameters).each(function() {
     parameter_set.addAndPopulate(this.valueName, this.value);
   });
@@ -562,13 +589,17 @@ function alert2view(alert) {
   $('#textarea-areaDesc').val(area.areaDesc);
 
   // clear and reload geocode set in widget
-  geocode_set.removeAll();
+  if (geocode_set) {
+    geocode_set.removeAll();
+  }
   $(area.geocodes).each(function() {
     geocode_set.addAndPopulate(this.valueName, this.value);
   });
 
   // clear and reload polygons in map
-  drawingLayer.destroyFeatures();
+  if (drawingLayer) {
+    drawingLayer.destroyFeatures();
+  }
   $(area.polygons).each(function() {
     addCapPolygonToMap(String(this));
   });
