@@ -139,6 +139,22 @@ $(document).on('pageshow', '#release', function() {
 
   // TBD qualify alert against profiles / rules
 
+  // Set focus to username field.
+  $('#text-uid').focus();
+
+  // Set focus to password field after user pressed enter on username field.
+  $('#text-uid').keydown(function(event) {
+    if (event.which == 13) {
+     $('#text-pwd').focus();
+    }
+  });
+
+  // Release alert after user pressed enter on password field.
+  $('#text-pwd').keydown(function(event) {
+    if (event.which == 13) {
+     $('#sending-alert-button').trigger('click');
+    }
+  });
 });
 
 
