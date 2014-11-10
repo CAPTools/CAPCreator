@@ -265,14 +265,14 @@ textarea.prepopulated {
   padding: 0 15px 15px 15px;
  }
 
-.templates-control .re-apply {
+.templates-control .re-apply, .templates-control .clear {
   max-width: 15em;
   display: inline-block;
   font-size: small;
   margin-left: 1em;
 }
 
-.re-apply a {
+.re-apply a, .clear a {
   text-decoration: none;
   display: none;
   font-weight: normal;

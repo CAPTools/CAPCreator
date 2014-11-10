@@ -260,7 +260,18 @@ function handleAreaTemplateChange(urlPrefix, adminUrl) {
       });
     }
     $('#textarea-areaDesc').val(area_descriptions.join(', '));
+    $('#clear-area-templates').show();
   });
+}
+
+
+function clearAreaTemplates() {
+  $('#clear-area-templates').hide();
+  $('#textarea-areaDesc').val('');
+  $('#select-area-template').val('None').selectmenu('refresh');
+  area_descriptions = [];
+  geocode_set.removeAll();
+  clearAll();
 }
 
 
@@ -625,6 +636,11 @@ function alert2view(alert) {
   });
   // altitude is not imported
   // ceiling is not imported
+
+  if (area.areaDesc) {
+    area_descriptions = area.areaDesc.split(', ');
+    $('#clear-area-templates').show();
+  }
 }
 
 

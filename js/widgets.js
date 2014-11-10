@@ -113,12 +113,11 @@ CapTupleSetWidget.prototype = {
     }
     return items;
   },
-  removeAll: function() {  // remove all tuples from the set
-    for (var i = 0; i < this.tuples.length; i++) {
+  removeAll: function() {  // Remove all tuples from the set.
+    for (var i = this.tuples.length - 1; i >= 0; i--) {
       var tuple = this.tuples[i];
-      // Remove from array.
-      this.tuples.splice($.inArray(tuple, this.tuples), 1);
-      $(tuple.div).remove(); // and also remove from screen
+      this.tuples.pop(tuple); // Remove from array.
+      $(tuple.div).remove(); // And also remove from screen.
     }
   }
 };  // end CapTupleSetWidget definition
