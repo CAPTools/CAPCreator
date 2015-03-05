@@ -1,18 +1,42 @@
 CAPCreator&trade;
 ==========
 
-<b>CAPCreator&trade;</b> is a simple tool for authoring alerts and other messages using the 
-<a href="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html" target="_blank">Common Alerting Protocol (v1.2)</a>. 
-A few notable limits on the current version:
-<ul>
-  <li>Only one language can be used in a single message (however multiple messages can be authored to address multilingual
-alerting requirements);
-  <li>Only one target area can be specified for an individual alert message (but it may include multiple polygons and/or 
-circles); and,
-  <li>All alerts are assumed to be effective immediately; the "effective" and "onset" elements are not supported.
-</ul>
-<p><b>CAPCreator</b> is part of the <b>CAPTools&trade;</b> collection and is designed to integrate with the 
-<b>CAPCollector&trade;</b> server for XML serialization, sender authentication, digital signature, alert forwarding 
-and local alert aggregation, and with the <b>CAPConsumer&trade;</b> framework for CAP message injestion and display.</p>
- <b>CAPTools</b>, <b>CAPCreator</b>, <b>CAPCollector</b> and <b>CAPConsumer</b> are trademarks of Carnegie Mellon 
- University.
+**CAPCreator&trade;** is a simple tool for authoring alerts and other messages using the
+[Common Alerting Protocol (v1.2)](http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html).
+
+Combined with [CapCollector&trade;](https://github.com/CAPTools/CapCollector),
+the tool offers an easy-to-use web form for creating and updating alerts,
+authentication mechanisms to control alert publishing, a database for recording
+published alerts, and endpoints for external users to view and download active
+alerts.
+
+It is designed to run on any standard web server, both locally hosted and from
+cloud-hosted providers.
+
+**Features**
+
+ * Create and reuse standard templates to simplify new alert generation.
+ * Required technical fields in the Common Alerting Protocol specification are
+ populated automatically to ensure alerts are properly and consistently identified
+ and updated.
+ * Authentication gives you control over who can officially publish alerts.
+ * Built-in support for a serving a feed of active alerts, both as XML and as an
+ embeddable HTML widget.
+ * Designed to work well on tablets and mobile devices as well as desktops.
+
+
+**A few notable limits on the current version:**
+
+ * Only one language can be used in a single message (however multiple messages
+ can be authored to address multilingual alerting requirements);
+ * Only one target area can be specified for an individual alert message (but
+ it may include multiple polygons and/or circles); and,
+ * All alerts are assumed to be effective immediately; the "effective" and
+ "onset" elements are not supported.
+
+The CAP Creator combines two pieces of the [open-source CAPTools™](https://github.com/CAPTools)
+project originally created at Carnegie Mellon University by a team lead by Art
+Botterell, one of the original designers of the Common Alerting Protocol.
+
+ **CAPTools&trade;**, **CAPCreator&trade;**, **CAPCollector&trade;** and
+ **CAPConsumer&trade;** are trademarks of Carnegie Mellon  University.
