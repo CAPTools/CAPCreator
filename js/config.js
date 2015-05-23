@@ -41,17 +41,27 @@
 /**
  * Set these for local configuration.
  * @param {{centerLat: float, centerLon: float,
-            centerZoom: int}} mapDefaultViewport
+ *          centerZoom: int}} mapDefaultViewport
+ * @param {string} defaultExpiresDurationMinutes Default expires
+ *     duration in mintues. Can set to "Others" if input manually.
+ * @param {boolean} useDatetimePicker Whether to use datetime picker for
+ *     for alert expiration field when "Other" option is selected.
+ * @param {string} timeZone The time zone used for this installation.
  * @constructor
  */
-var CAPCreatorConfiguration = function(mapDefaultViewport) {
+var CAPCreatorConfiguration = function(mapDefaultViewport,
+    defaultExpiresDurationMinutes,
+    useDatetimePicker,
+    timeZone) {
   this.CAPCollectorBaseURL = "/";
   this.CAPCollectorSubmitURL = "/post/";
   /* Relative path to the "img" subdirectory of OpenLayers install. */
   this.OpenLayersImgPath = "client/img/";
   this.mapDefaultViewport = mapDefaultViewport;
   this.atomUrl = "/feed.xml";
-  this.defaultExpiresDurationMinutes = 60;
+  this.defaultExpiresDurationMinutes = defaultExpiresDurationMinutes;
   this.maxHeadlineLength = 140;
   this.versionID = "0.9.3";
+  this.useDatetimePicker = useDatetimePicker;
+  this.timeZone = timeZone;
 }

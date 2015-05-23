@@ -141,14 +141,14 @@ function setView(centerLat, centerLon, zoomLevel) {
 
 // handler for radio buttons, activates the corresponding OpenLayers control
 function toggleControl(element) {
-    for (key in drawControls) {
-        var control = drawControls[key];
-        if (element.value == key && element.checked) {
-          control.activate();
-        } else {
-          control.deactivate();
-        }
+  for (key in drawControls) {
+    var control = drawControls[key];
+    if (element.value == key && element.checked) {
+      control.activate();
+    } else {
+      control.deactivate();
     }
+  }
 }
 
 //reset map to Navigate mode (handler for drawingLayer's "featureadded" event)
@@ -167,8 +167,7 @@ function getPolygons() {
   if (drawingLayer) {
     for (var i = 0; i < drawingLayer.features.length; i++) {
       var feature = drawingLayer.features[i];
-      // a somewhat arbitrary test for now
-      if (feature.geometry.getVertices().length != 40) {
+      if (feature.attributes['polygon'] && !feature.attributes['id']) {
         polygons.push(polygonToCapXml(feature));
       }
     }
@@ -182,8 +181,7 @@ function getCircles() {
   if (drawingLayer) {
     for (var i = 0; i < drawingLayer.features.length; i++) {
       var feature = drawingLayer.features[i];
-      // a somewhat arbitrary test for now
-      if (feature.geometry.getVertices().length == 40) {
+      if (feature.attributes['circle']) {
         circles.push(circleToCapXml(feature));
       }
     }
@@ -191,19 +189,54 @@ function getCircles() {
   return circles;
 }
 
-// clear the entire draw layer
-function clearAll(element) {
-  drawingLayer.destroyFeatures();
+// clear all features drawn to the draw layer
+function clearAllDrawnAreas() {
+  while(clearLastDrawnArea());
 }
 
-// remove the last feature added to the draw layer
-function clearLast(element) {
-  drawingLayer.destroyFeatures(
-      drawingLayer.features[drawingLayer.features.length - 1]);
+// remove the last feature added to the draw layer, skipping geocode previews
+function clearLastDrawnArea() {
+  var i = drawingLayer.features.length - 1;
+  while (i >= 0 && drawingLayer.features[i].attributes &&
+         drawingLayer.features[i].attributes['id']) {
+    i--;
+  }
+  if (i >= 0) {
+    drawingLayer.destroyFeatures(drawingLayer.features[i]);
+    return true;
+  }
+  return false;
+}
+
+function clearDrawnAreaBySource(source) {
+  var found = false;
+  for (var i = 0; i < drawingLayer.features.length; i++) {
+    var feature = drawingLayer.features[i];
+    if (feature.attributes && feature.attributes['source'] == source) {
+      drawingLayer.destroyFeatures(feature);
+      found = true;
+      i--;
+    }
+  }
+  return found;
+}
+
+// clear all geocode preview polygons with the given id from the map
+function clearGeocodePreview(id) {
+  var found = false;
+  for (var i = 0; i < drawingLayer.features.length; i++) {
+    var feature = drawingLayer.features[i];
+    if (feature.attributes && feature.attributes['id'] == id) {
+      drawingLayer.destroyFeatures(feature);
+      found = true;
+      i--;
+    }
+  }
+  return found;
 }
 
 // add a polygon in CAP string format as a feature on the drawing layer
-function addCapPolygonToMap(polygonString) {
+function addCapPolygonToMap(polygonString, source, opt_id) {
   points = [];
   pointStrings = polygonString.split(' ');
   // note swap of coordinate order 'twixt CAP and OpenLayers
@@ -216,11 +249,15 @@ function addCapPolygonToMap(polygonString) {
   var ring = new OpenLayers.Geometry.LinearRing(points);
   var polygon = new OpenLayers.Geometry.Polygon(ring);
   var feature = new OpenLayers.Feature.Vector(polygon);
+  feature.attributes = { polygon: true, source: source };
+  if (opt_id) {
+    feature.attributes.id = opt_id;
+  }
   drawingLayer.addFeatures([feature]);
 }
 
 //add a circle in CAP string format as a feature on the drawing layer
-function addCapCircleToMap(circleString) {
+function addCapCircleToMap(circleString, source) {
   var parts = circleString.split(' ');
   var radius = parseFloat(parts[1]) * 1000;
   var coords = parts[0].split(',');
@@ -232,6 +269,7 @@ function addCapCircleToMap(circleString) {
       radius,
       40);
   var feature = new OpenLayers.Feature.Vector(circle);
+  feature.attributes = { circle: true, source: source };
   drawingLayer.addFeatures([feature]);
 }
 

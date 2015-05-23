@@ -46,7 +46,14 @@
    e.g., parameter, geocode).
 */
 
+// Utility to escape HTML entities in user-supplied text
+function escape_text(rawText) {
+  return $('<div/>').text(rawText).html();
+}
+
 var CapButtonWidget = function(label, width) {
+  label = escape_text(label);
+  width = escape_text(width);
   return $('<a data-role="button" data-mini="true" ' +
       'class="ui-mini-smaller ui-btn ui-shadow ui-btn-corner-all ' +
       'ui-mini parameter ui-btn-up-c" data-corners="true" ' +
@@ -57,6 +64,8 @@ var CapButtonWidget = function(label, width) {
 };
 
 var CapParameterWidget = function(name, placeholder) {
+  name = escape_text(name);
+  placeholder = escape_text(placeholder);
   return $('<div class="cap-parameter">' +
       '<div class="invalid-placeholder-message hidden">' +
       gettext('Fill in placeholder') +
@@ -69,30 +78,37 @@ var CapParameterWidget = function(name, placeholder) {
       'class="ui-input-text ui-body-c placeholder-field"></div></div>');
 };
 
-var CapTupleSetWidget = function(label, area, div) {
+var CapTupleSetWidget = function(label, area, div, opt_onChange, opt_onDelete) {
   this.div = div;
   this.area = area;
   this.tuples = [];
-  label = gettext('Add a %s').replace('%s', label)
+  label = gettext('Add a %s').replace('%s', label);
   this.addButton = new CapButtonWidget(label, 200);
-  this.addButton.on('click', null, this, this.addItem).appendTo($(this.div));
+  this.addButton.on('click', null, this, this.addItem.bind(this))
+      .appendTo($(this.div));
+  this.customOnChange = opt_onChange;
+  this.customOnDelete = opt_onDelete;
 };
 
 
 CapTupleSetWidget.prototype = {
+  changed: function(tuple, previous) {
+    if (this.customOnChange) {
+      this.customOnChange(tuple, previous);
+    }
+  },
   addItem: function(event) {
-    var tupleSet = event.data;  // ref to tupleSet
-    var new_tuple = new CapTupleWidget(tupleSet, 500);
-    tupleSet.tuples.push(new_tuple);  // add to array
-    $(tupleSet.div).append($(new_tuple.div));  // add to screen
-    new_tuple.valueName.focus();  // and put focus on valueName field
+    var newTuple = new CapTupleWidget(this, 500);
+    this.tuples.push(newTuple);  // add to array
+    $(this.div).append($(newTuple.div));  // add to screen
+    newTuple.valueName.focus();  // and put focus on valueName field
   },
   addAndPopulate: function(valueName, value) {
-    var new_tuple = new CapTupleWidget(this, 500);
-    $(new_tuple.valueName).find('input').val(valueName);
-    $(new_tuple.value).find('input').val(value);
-    this.tuples.push(new_tuple);  // add to array
-    $(this.div).append($(new_tuple.div));  // add to screen
+    var newTuple = new CapTupleWidget(this, 500);
+    $(newTuple.valueName).find('input').val(valueName);
+    $(newTuple.value).find('input').val(value);
+    this.tuples.push(newTuple);  // add to array
+    $(this.div).append($(newTuple.div));  // add to screen
   },
   deleteItem: function(event) {
     var tuple = event.data;  // ref to tuple to be removed
@@ -100,16 +116,34 @@ CapTupleSetWidget.prototype = {
     // Remove from array.
     tupleSet.tuples.splice($.inArray(tuple, tupleSet.tuples), 1);
     $(tuple.div).remove(); // and also remove from screen
+    if (tupleSet.customOnDelete
+        && (event.triggerOnDelete === undefined || event.triggerOnDelete)) {
+      tupleSet.customOnDelete(tuple);
+    }
+  },
+  deleteByValue: function(valueName, value, triggerOnDelete) {
+    for (var i = 0; i < this.tuples.length; i++) {
+      var tuple = this.tuples[i];
+      var tupleValue = tuple.getValue();
+      if (valueName == tupleValue.valueName && value == tupleValue.value) {
+        this.deleteItem({data: tuple, triggerOnDelete: triggerOnDelete});
+        i--;
+      }
+    }
+  },
+  contains: function(valueName, value) {
+    for (var i = 0; i < this.tuples.length; i++) {
+      var tupleValue = this.tuples[i].getValue();
+      if (tupleValue.valueName == valueName && tupleValue.value == value) {
+        return true;
+      }
+    }
+    return false;
   },
   getAll: function() {  // return widget contents as an array of arrays
     var items = [];
     for (var i = 0; i < this.tuples.length; i++) {
-      var item = [];
-      var tuple_widget = this.tuples[i];
-      // Utility escape_text() from CAPComposer.js.
-      item.push(escape_text(tuple_widget.valueName.find('input').val()));
-      item.push(escape_text(tuple_widget.value.find('input').val()));
-      items.push(item);
+      items.push(this.tuples[i].getValue());
     }
     return items;
   },
@@ -118,6 +152,9 @@ CapTupleSetWidget.prototype = {
       var tuple = this.tuples[i];
       this.tuples.pop(tuple); // Remove from array.
       $(tuple.div).remove(); // And also remove from screen.
+      if (this.customOnDelete) {
+        this.customOnDelete(tuple);
+      }
     }
   }
 };  // end CapTupleSetWidget definition
@@ -131,13 +168,32 @@ var CapTupleWidget = function(tupleSet, widget_width) {
 
   this.valueName = CapParameterWidget('valueName', gettext('name'));
   this.valueName.appendTo($(this.div));
-  this.valueName.change(tupleSet.changed);
+  this.valueName.previous = '';
+  this.valueName.find('input').change(this.onChange.bind(this));
 
   this.value = CapParameterWidget('value', gettext('value'));
   this.value.appendTo($(this.div));
-  this.value.change(tupleSet.changed);
+  this.value.find('input').change(this.onChange.bind(this));
+  this.value.previous = '';
   this.delButton = CapButtonWidget(gettext('Delete'), 75);
   this.delButton.on('click', null, this,
                     tupleSet.deleteItem).appendTo($(this.div));
   return this;
+};
+
+CapTupleWidget.prototype.getValue = function() {
+  return {
+    valueName: escape_text(this.valueName.find('input').val()),
+    value: escape_text(this.value.find('input').val())
+  };
+};
+
+CapTupleWidget.prototype.onChange = function(event) {
+  this.tupleSet.changed(this.getValue(), {
+    valueName: this.valueName.previous,
+    value: this.value.previous
+  });
+  var newValue = this.getValue();
+  this.valueName.previous = newValue.valueName;
+  this.value.previous = newValue.value;
 };

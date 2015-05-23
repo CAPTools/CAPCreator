@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * caplib.js -- Common Alerting Protocol 1.2 helper library
- * version 1.1.2 - 12 June 2014
+ * version 1.1.3 - 20 April 2015
  *
  * Copyright (c) 2013, Carnegie Mellon University
  * All rights reserved.
@@ -50,6 +50,32 @@
  *  Alert.addResource(string) - adds a Resource object to the Info.resources array, initializes the resourceDesk field from argument and returns the new Resource object
  *  All other properties are populated by direct assignment.  All reads are performed by direct reference.
  */
+
+function xmlEscape(str) {
+  if (str.indexOf('&') != -1) {
+    str = str.replace(/&/g, '&amp;');
+  }
+  if (str.indexOf('<') != -1) {
+    str = str.replace(/</g, '&lt;');
+  }
+  if (str.indexOf('>') != -1) {
+    str = str.replace(/>/g, '&gt;');
+  }
+  return str;
+}
+
+function xmlUnescape(str) {
+  if (str.indexOf('&lt;') != -1) {
+    str = str.replace(/&lt;/g, '<');
+  }
+  if (str.indexOf('&gt;') != -1) {
+    str = str.replace(/&gt;/g, '>');
+  }
+  if (str.indexOf('&amp;') != -1) {
+    str = str.replace(/&amp;/g, '&');
+  }
+  return str;
+}
 
 //////////////////////////////////////////////////
 // ALERT Object
@@ -80,175 +106,179 @@ Alert.prototype.getJSON = function() {
   return JSON.stringify(this, undefined, 2);
 };
 
+Alert.prototype._xmlTag = function(tagName, value, indent) {
+  return indent +
+      '<' + tagName + '>' +
+      xmlEscape(xmlUnescape(value)) +
+      '</' + tagName + '>\n';
+}
+
+Alert.prototype._xmlNameValueTag = function(tagName, name, value, indent) {
+  var indent2 = indent + '  ';
+  return indent + '<' + tagName + '>\n' +
+    this._xmlTag('valueName', name, indent2) +
+    this._xmlTag('value', value, indent2) +
+    indent + '</' + tagName + '>\n'
+}
+
 Alert.prototype.getCAP = function() {
   var xml = '<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">\n';
   var indent = '  ';
-  xml = xml + indent + '<identifier>' + this.identifier + '</identifier>\n';
-  xml = xml + indent + '<sender>' + this.sender + '</sender>\n';
-  xml = xml + indent + '<sent>' + this.sent + '</sent>\n';
-  xml = xml + indent + '<status>' + this.status + '</status>\n';
-  xml = xml + indent + '<msgType>' + this.msgType + '</msgType>\n';
+  xml += this._xmlTag('identifier', this.identifier, indent);
+  xml += this._xmlTag('sender', this.sender, indent);
+  xml += this._xmlTag('sent', this.sent, indent);
+  xml += this._xmlTag('status', this.status, indent);
+  xml += this._xmlTag('msgType', this.msgType, indent);
   if (this.source && this.source != '') {
-    xml = xml + indent + '<source>' + this.source + '</source>\n';
+    xml += this._xmlTag('source', this.source, indent);
   }
-  xml = xml + indent + '<scope>' + this.scope + '</scope>\n';
+  xml += this._xmlTag('scope', this.scope, indent);
   if (this.restriction && this.restriction != '') {
-    xml = xml + indent + '<restriction>' + this.restriction +
-          '</restriction>\n';
+    xml += this._xmlTag('restriction', this.restriction, indent);
   }
-  if (this.address && this.addresses != '') {
-    xml = xml + indent + '<addresses>' + this.addresses + '</addresses>\n';
+  if (this.addresses && this.addresses != '') {
+    xml += this._xmlTag('addresses', this.addresses, indent);
   }
   if (this.code && this.code != '') {
-    xml = xml + indent + '<code>' + this.code + '</code>\n';
+    xml += this._xmlTag('code', this.code, indent);
   }
   if (this.note && this.note != '') {
-    xml = xml + indent + '<note>' + this.note + '</note>\n';
+    xml += this._xmlTag('note', this.note, indent);
   }
   if (this.references && this.references != '') {
-    xml = xml + indent + '<references>' + this.references + '</references>\n';
+    xml += this._xmlTag('references', this.references, indent);
   }
   if (this.incidents && this.incidents != '') {
-    xml = xml + indent + '<incidents>' + this.incidents + '</incidents>\n';
+    xml += this._xmlTag('incidents', this.incidents, indent);
   }
   if (this.infos && this.infos.length > 0) {
     for (var i = 0; i < this.infos.length; i++) {
       var info = this.infos[i];
-      xml = xml + indent + '<info>\n';
+      xml += indent + '<info>\n';
       indent = '    ';
-      xml = xml + indent + '<language>' + info.language + '</language>\n';
+      xml += this._xmlTag('language', info.language, indent);
       if (info.categories.length) {
         for (var i = 0; i < info.categories.length; i++) {
-          var category = info.categories[i];
-          xml = xml + indent + '<category>' + category + '</category>\n';
+          xml += this._xmlTag('category', info.categories[i], indent);
         }
       }
-      xml = xml + indent + '<event>' + info.event + '</event>\n';
+      xml += this._xmlTag('event', info.event, indent);
       if (info.responseTypes && info.responseTypes.length) {
         for (var i = 0; i < info.responseTypes.length; i++) {
-          var responseType = info.responseTypes[i];
-          xml = xml + indent + '<responseType>' + responseType +
-                '</responseType>\n';
+          xml += this._xmlTag('responseType', info.responseTypes[i], indent);
         }
       }
-      xml = xml + indent + '<urgency>' + info.urgency + '</urgency>\n';
-      xml = xml + indent + '<severity>' + info.severity + '</severity>\n';
-      xml = xml + indent + '<certainty>' + info.certainty + '</certainty>\n';
-      if (this.audience && this.audience != '') {
-        xml = xml + indent + '<audience>' + info.audience + '</audience>\n';
+      xml += this._xmlTag('urgency', info.urgency, indent);
+      xml += this._xmlTag('severity', info.severity, indent);
+      xml += this._xmlTag('certainty', info.certainty, indent);
+      if (info.audience && info.audience != '') {
+        xml += this._xmlTag('audience', info.audience, indent);
       }
 
       if (info.eventCodes && info.eventCodes.length) {
         for (var i = 0; i < info.eventCodes.length; i++) {
-          var eventCode = info.eventCodes[i];
-          xml = xml + indent + '<eventCode>' + eventCode + '</eventCode>\n';
+          var ec = info.eventCodes[i];
+          xml += this._xmlNameValueTag(
+              'eventCode', ec.valueName, ec.value, indent);
         }
       }
       if (info.effective && info.effective != '') {
-        xml = xml + indent + '<effective>' + info.effective + '</effective>\n';
+        xml += this._xmlTag('effective', info.effective, indent);
       }
       if (info.onset && info.onset != '') {
-        xml = xml + indent + '<onset>' + info.onset + '</onset>\n';
+        xml += this._xmlTag('onset', info.onset, indent);
       }
       if (info.expires && info.expires != '') {
-        xml = xml + indent + '<expires>' + info.expires + '</expires>\n';
+        xml += this._xmlTag('expires', info.expires, indent);
       }
       if (info.senderName && info.senderName != '') {
-        xml = xml + indent + '<senderName>' + info.senderName +
-              '</senderName>\n';
+        xml += this._xmlTag('senderName', info.senderName, indent);
       }
       if (info.headline && info.headline != '') {
-        xml = xml + indent + '<headline>' + info.headline + '</headline>\n';
+        xml += this._xmlTag('headline', info.headline, indent);
       }
       if (info.description && info.description != '') {
-        xml = xml + indent + '<description>' + info.description +
-              '</description>\n';
+        xml += this._xmlTag('description', info.description, indent);
       }
       if (info.instruction && info.instruction != '') {
-        xml = xml + indent + '<instruction>' + info.instruction +
-              '</instruction>\n';
+        xml += this._xmlTag('instruction', info.instruction, indent);
       }
       if (info.web && info.web != '') {
-        xml = xml + indent + '<web>' + info.web + '</web>\n';
+        xml += this._xmlTag('web', info.web, indent);
       }
       if (info.contact && info.contact != '') {
-        xml = xml + indent + '<contact>' + info.contact + '</contact>\n';
+        xml += this._xmlTag('contact', info.contact, indent);
       }
       if (info.parameters && info.parameters.length) {
         for (var i = 0; i < info.parameters.length; i++) {
-          var parameter = info.parameters[i];
-          xml = xml + indent + '<parameter>\n';
-          xml = xml + indent + '  <valueName>' + parameter[0] + '</valueName>\n';
-          xml = xml + indent + '  <value>' + parameter[1] + '</value>\n';
-          xml = xml + indent + '</parameter>\n';
+          var param = info.parameters[i];
+          xml += this._xmlNameValueTag(
+              'parameter', param.valueName, param.value, indent);
         }
       }
       if (info.resources && info.resources.length > 0) {
-        for (var i = 0; i < this.info.resources.length; i++) {
+        for (var i = 0; i < info.resources.length; i++) {
           var resource = info.resources[i];
-          xml = xml + indent + '<resource>\n';
+          xml += indent + '<resource>\n';
           indent = '      ';
-          xml = xml + indent + '<resourceDesc>' + resource.resourceDesc +
-                '</resourceDesc>\n';
+          xml += this._xmlTag('resourceDesc', resource.resourceDesc, indent);
           if (resource.mimeType && resource.mimeType != '') {
-            xml = xml + indent + '<mimeType>' + resource.mimeType +
-                  '</mimeType>\n';
+            xml += this._xmlTag('mimeType', resource.mimeType, indent);
+          }
+          if (resource.size && resource.size != '') {
+            xml += this._xmlTag('size', resource.size, indent);
           }
           if (resource.uri && resource.uri != '') {
-            xml = xml + indent + '<uri>' + resource.uri + '</uri>\n';
+            xml += this._xmlTag('uri', resource.uri, indent);
           }
           if (resource.digest && resource.digest != '') {
-            xml = xml + indent + '<digest>' + resource.digest + '</digest>\n';
+            xml += this._xmlTag('digest', resource.digest, indent);
           }
-          indent = '  ';
-          xml = xml + indent + '</resource>\n';
+          indent = '    ';
+          xml += indent + '</resource>\n';
         }
       }
       if (info.areas && info.areas.length > 0) {
         for (var i = 0; i < info.areas.length; i++) {
           var area = info.areas[i];
-          xml = xml + indent + '<area>\n';
+          xml += indent + '<area>\n';
           indent = '      ';
           if (area.areaDesc == '') {
             area.areaDesc = 'Unspecified Area';
           }
-          xml = xml + indent + '<areaDesc>' + area.areaDesc + '</areaDesc>\n';
+          xml += this._xmlTag('areaDesc', area.areaDesc, indent);
           if (area.polygons && area.polygons.length) {
             for (var i = 0; i < area.polygons.length; i++) {
-              xml = xml + indent + '<polygon>' + area.polygons[i] +
-                    '</polygon>\n';
+              xml += this._xmlTag('polygon', area.polygons[i], indent);
             }
           }
           if (area.circles && area.circles.length) {
             for (var i = 0; i < area.circles.length; i++) {
-              xml = xml + indent + '<circle>' + area.circles[i] + '</circle>\n';
+              xml += this._xmlTag('circle', area.circles[i], indent);
             }
           }
           if (area.geocodes && area.geocodes.length) {
             for (var i = 0; i < area.geocodes.length; i++) {
-              var geocode = area.geocodes[i];
-              xml = xml + indent + '<geocode>\n';
-              xml = xml + indent + '  <valueName>' + geocode[0] +
-                    '</valueName>\n';
-              xml = xml + indent + '  <value>' + geocode[1] + '</value>\n';
-              xml = xml + indent + '</geocode>\n';
+              var gc = area.geocodes[i];
+              xml += this._xmlNameValueTag(
+                  'geocode', gc.valueName, gc.value, indent);
             }
           }
           if (area.altitude && area.altitude != '') {
-            xml = xml + indent + '<altitude>' + area.altitude + '</altitude>\n';
+            xml += this._xmlTag('altitude', area.altitude, indent);
           }
           if (area.ceiling && area.ceiling != '') {
-            xml = xml + indent + '<ceiling>' + area.ceiling + '</ceiling>\n';
+            xml += this._xmlTag('ceiling', area.ceiling, indent);
           }
           indent = '    ';
-          xml = xml + indent + '</area>\n';
+          xml += indent + '</area>\n';
         }
       }
       indent = '  ';
-      xml = xml + indent + '</info>\n';
+      xml += indent + '</info>\n';
     }
   }
-  xml = xml + '</alert>';
+  xml += '</alert>';
   return xml;
 };
 
@@ -315,8 +345,8 @@ Info.prototype.addResource = function(resourceDesc) {
 };
 
 var EventCode = function(valueName, value) {
-  this.valueName = valueName = value;
-  this.value;
+  this.valueName = valueName;
+  this.value = value;
 };
 
 var Parameter = function(valueName, value) {
@@ -329,6 +359,7 @@ var Parameter = function(valueName, value) {
 var Resource = function(resourceDesc) {
   this.resourceDesc = resourceDesc;  // REQUIRED
   this.mimeType;
+  this.size;
   this.uri;
   this.digest;
   // note: derefURI is not implemented in this tool
@@ -400,7 +431,8 @@ function parseCAP2Alert(cap_xml) {
   info.certainty = $(xml).find('certainty').text();
   info.audience = $(xml).find('audience').text();
   $(xml).find('eventCode').each(function() {
-    info.addEventCode($(this).text());
+    info.addEventCode(
+        $(this).find('valueName').text(), $(this).find('value').text());
   });
   info.effective = $(xml).find('effective').text();
   info.onset = $(xml).find('onset').text();
@@ -412,9 +444,10 @@ function parseCAP2Alert(cap_xml) {
   info.web = $(xml).find('web').text();
   info.contact = $(xml).find('contact').text();
   $(xml).find('resource').each(function() {
-    var resource = info.addResource();
-    resource.resourceDesc = $(this).find('areaDesc').text();
+    var resourceDesc = $(this).find('resourceDesc').text();
+    var resource = info.addResource(resourceDesc);
     resource.mimeType = $(this).find('mimeType').text();
+    resource.size = $(this).find('size').text();
     resource.uri = $(this).find('uri').text();
     resource.digest = $(this).find('digest').text();
   });

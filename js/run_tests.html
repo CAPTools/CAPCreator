@@ -19,15 +19,24 @@
   <script src="jquery-1.10.2.min.js"></script>
   <script src="jquery.mobile-1.3.0.min.js"></script>
   <script src="OpenLayers.js"></script>
+  <script src="jquery-ui-1.10.4.min.js"></script>
+  <script src="jquery-ui-timepicker-addon.js"></script>
+  <script src="select2.min.js"></script>
   <script src="https://code.jquery.com/qunit/qunit-1.15.0.js"></script>
   <script src="config.js"></script>
+  <script src="moment.min.js"></script>
+  <script src="moment-timezone-with-data.min.js"></script>
   <script>
     var mapDefaultViewport = {
       centerLat: 1,
       centerLon: 2,
       zoomLevel: 3
     };
-    var config = new CAPCreatorConfiguration(mapDefaultViewport);
+    var config = new CAPCreatorConfiguration(mapDefaultViewport, 'Other', true, 'US/Eastern');
+
+    function gettext(s) {
+      return s;
+    }
   </script>
   <script src="caplib.js"></script>
   <script src="cap_map.js"></script>
@@ -35,5 +44,22 @@
 
   <script src="CAPCreator.js"></script>
   <script src="CAPCreator_test.js"></script>
+  <script src="caplib_test.js"></script>
+  <script src="widgets_test.js"></script>
+
+  <div id="picker-expires-block">
+    <input type="text"
+           id="picker-expires"
+           class="required-field"
+           name="picker-expires"
+           readonly="readonly" >
+  </div>
+  <div id="tuple-set-container"/>
+  <div id="geocode-div"/>
+  <textarea name="textarea-areaDesc" id="textarea-areaDesc"></textarea>
+  <select name="select-area-template" id="select-area-template" multiple="multiple" data-role="none" data-placeholder="None" onchange="handleAreaTemplateChange('template/area');">
+    <option value="1">Palo Alto</option>
+    <option value="2">Mountain View</option>
+  </select>
 </body>
 </html>

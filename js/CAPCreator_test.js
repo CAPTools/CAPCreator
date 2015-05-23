@@ -5,7 +5,14 @@
 
 
 /* Define unit test module for CAPCreator tests. */
-QUnit.module('CAPCreator.js Unit Tests');
+QUnit.module('CAPCreator.js Unit Tests', {
+  beforeEach: function() {
+    this.savedAjax = $.ajax;
+  },
+  afterEach: function() {
+    $.ajax = this.savedAjax;
+  }
+});
 
 
 /* Tests that escapedText() function returns expected result. */
@@ -20,6 +27,18 @@ QUnit.test('Test escape_text function', function(assert) {
   initialText = 'text to be not escaped';
   escapedText = escape_text(initialText);
   assert.equal(escapedText, initialText, 'Expected: text to be ' + initialText);
+});
+
+/** Tests that cap2htmlcells escapes correctly. */
+QUnit.test('Test cap2htmlcells escapes correctly', function(assert) {
+  assert.equal(
+      "<td class='html_label_cell'>x</td><td colspan='5'>y</td>\n",
+      cap2htmlcells('x', 'y', 5));
+  var initial = 'test\'"><img src=x onerror=prompt(1)>';
+  var escaped = 'test\'"&gt;&lt;img src=x onerror=prompt(1)&gt;';
+  assert.equal(
+      "<td class='html_label_cell'>x</td><td>" + escaped + '</td>\n',
+      cap2htmlcells('x', initial));
 });
 
 
@@ -89,4 +108,180 @@ QUnit.test('Test clearWebFieldIfAutopopulated()', function(assert) {
   clearWebFieldIfAutopopulated(initialAlert);
   assert.notEqual(initialAlertInfo.web, '',
                   'Expected: text-web field not to be empty');
+});
+
+
+/**
+ * Tests alert datetime picker working correctly.
+ */
+QUnit.test('Test datetime picker', function(assert) {
+  initAlertPage();
+
+  $('#picker-expires').trigger('click');
+  assert.ok($('#ui-datepicker-div').is(':visible'), 'Datetime picker visible');
+
+  var dateString = '2016-04-04T 15:30:25 -0700';
+  $('#picker-expires').val(dateString);
+  var expectedDate = new Date('2016-04-04T15:30:25-0700');
+  var actualDate = new Date($('#picker-expires').datetimepicker('getDate'));
+  assert.equal(expectedDate.toString(), actualDate.toString(),
+      'Expect prepopulated value same as selected.');
+});
+
+
+/**
+ * Tests that the area template picker is functioning.
+ */
+QUnit.test('Test area template picker', function(assert) {
+  initAlertPage();
+  polygonPreviewUrl = 'preview/polygons';
+  csrfToken = 'fake';
+  geocodeSet = new CapTupleSetWidget(Geocode, area,
+      $('#geocode_div'), changeGeocode, deleteGeocode);
+  drawingLayer = {features: []};
+
+  $.ajax = function(params) {
+    var responseJson = null;
+    var responseText = '';
+    if (params['url'] == 'template/area?template_id=1') {
+      responseText = '<area><areaDesc>Palo Alto</areaDesc>'
+        + '<geocode><valueName>geocode</valueName>'
+        + '<value>PaloAlto</value></geocode></area>';
+    } else if (params['url'] == 'template/area?template_id=2') {
+      responseText = '<area><areaDesc>Mountain View</areaDesc>'
+        + '<geocode><valueName>geocode</valueName>'
+        + '<value>MountainView</value></geocode></area>';
+    } else {
+      responseJson = '[]';
+    }
+    params['success'](
+        null /* data */, null /* status */, {responseText: responseText});
+  };
+
+  // add an area template
+  $('#select-area-template').val(['1']).trigger('change');
+  assert.deepEqual($('#select-area-template').val(), ['1']);
+  assert.notEqual(selectedAreaTemplates['1'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Palo Alto');
+  assert.equal(geocodeSet.getAll().length, 1);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[0].value, 'PaloAlto');
+
+  // remove it
+  $('#select-area-template').val(null).trigger('change');
+  assert.equal($('#select-area-template').val(), null);
+  assert.deepEqual(selectedAreaTemplates, {});
+  assert.equal($('#textarea-areaDesc').val(), '');
+  assert.equal(geocodeSet.getAll().length, 0);
+
+  // add two
+  $('#select-area-template').val(['1']).trigger('change');
+  $('#select-area-template').val(['1', '2']).trigger('change');
+  assert.deepEqual($('#select-area-template').val(), ['1', '2']);
+  assert.notEqual(selectedAreaTemplates['1'], undefined);
+  assert.notEqual(selectedAreaTemplates['2'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Palo Alto, Mountain View');
+  assert.equal(geocodeSet.getAll().length, 2);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[0].value, 'PaloAlto');
+  assert.equal(geocodeSet.getAll()[1].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[1].value, 'MountainView');
+
+  // remove one
+  $('#select-area-template').val(['2']).trigger('change');
+  assert.deepEqual($('#select-area-template').val(), ['2']);
+  assert.equal(selectedAreaTemplates['1'], undefined);
+  assert.notEqual(selectedAreaTemplates['2'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Mountain View');
+  assert.equal(geocodeSet.getAll().length, 1);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[0].value, 'MountainView');
+
+  // add back the same one, no change
+  $('#select-area-template').val(['2']).trigger('change');
+  assert.deepEqual($('#select-area-template').val(), ['2']);
+  assert.equal(selectedAreaTemplates['1'], undefined);
+  assert.notEqual(selectedAreaTemplates['2'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Mountain View');
+  assert.equal(geocodeSet.getAll().length, 1);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[0].value, 'MountainView');
+
+  // change a geocode
+  var tuple = geocodeSet.tuples[0];
+  tuple.valueName.find('input').val('foo').change();
+  tuple.value.find('input').val('bar').change();
+  assert.equal(selectedAreaTemplates['2'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), '');
+  assert.equal($('#select-area-template').val(), null);
+  assert.equal(geocodeSet.getAll().length, 1);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'foo');
+  assert.equal(geocodeSet.getAll()[0].value, 'bar');
+
+  // delete a geocode
+  $('#select-area-template').val(['1']).trigger('change');
+  assert.deepEqual($('#select-area-template').val(), ['1']);
+  assert.notEqual(selectedAreaTemplates['1'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Palo Alto');
+  assert.equal(geocodeSet.getAll().length, 2);
+  assert.equal(geocodeSet.getAll()[1].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[1].value, 'PaloAlto');
+  geocodeSet.deleteItem({data: geocodeSet.tuples[0]});
+  assert.equal($('#textarea-areaDesc').val(), '');
+  assert.equal($('#select-area-template').val(), null);
+  assert.equal(geocodeSet.getAll().length, 1);
+
+  // add two, delete a geocode, remaining template stays selected
+  $('#select-area-template').val(['1']).trigger('change');
+  $('#select-area-template').val(['1', '2']).trigger('change');
+  assert.equal(geocodeSet.getAll().length, 2);
+  geocodeSet.deleteItem({data: geocodeSet.tuples[0]});
+  assert.deepEqual($('#select-area-template').val(), ['2']);
+  assert.equal(selectedAreaTemplates['1'], undefined);
+  assert.notEqual(selectedAreaTemplates['2'], undefined);
+  assert.equal($('#textarea-areaDesc').val(), 'Mountain View');
+  assert.equal(geocodeSet.getAll().length, 1);
+  assert.equal(geocodeSet.getAll()[0].valueName, 'geocode');
+  assert.equal(geocodeSet.getAll()[0].value, 'MountainView');
+
+  // manually change area desc, change a geocode
+  $('#select-area-template').val(['1', '2']).trigger('change');
+  $('#textarea-areaDesc').val('manual edit');
+  var tuple = geocodeSet.tuples[0];
+  tuple.valueName.find('input').val('foo').change();
+  tuple.value.find('input').val('bar').change();
+  assert.equal($('#textarea-areaDesc').val(), 'manual edit');
+  assert.equal($('#select-area-template').val(), null);
+  assert.equal(geocodeSet.getAll().length, 2);
+
+  geocodeSet.deleteItem({data: geocodeSet.tuples[1]});
+  geocodeSet.deleteItem({data: geocodeSet.tuples[0]});
+
+  // manually change area desc, delete a geocode
+  $('#select-area-template').val(['1']).trigger('change');
+  $('#select-area-template').val(['1', '2']).trigger('change');
+  $('#textarea-areaDesc').val('manual edit');
+  geocodeSet.deleteItem({data: geocodeSet.tuples[1]});
+  assert.equal($('#textarea-areaDesc').val(), 'manual edit');
+  assert.deepEqual($('#select-area-template').val(), ['1']);
+  assert.equal(geocodeSet.getAll().length, 1);
+});
+
+/**
+ * Tests datetime fields are in specified timezone.
+ */
+QUnit.test('Test datetime field in specified time zone', function(assert) {
+  var expectedTimeZoneOffset = moment().tz(timeZone).format('Z');
+  $('#select-expires-min').val(['1']).trigger('change');
+
+  view2model(null);
+  // Check sent & expire field datetime string time zone offset same as
+  // given time zone.
+  assert.equal(alert.sent.slice(-6), expectedTimeZoneOffset);
+  assert.equal(info.expires.slice(-6), expectedTimeZoneOffset);
+
+  // Test template timezone
+  setDefaultAlertExpiration(20, true);
+  var alertDateStr = $('#picker-expires').val();
+  assert.equal(alertDateStr.slice(-6), expectedTimeZoneOffset);
 });
